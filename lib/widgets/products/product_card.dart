@@ -1,0 +1,63 @@
+import 'package:flutter/material.dart';
+import './price_tag.dart';
+import '../ui_elements/title_Default.dart';
+import './address_tag.dart';
+
+class product_card extends StatelessWidget {
+  Map<String, dynamic> product;
+  final int productIndex;
+  product_card(this.product, this.productIndex);
+
+  Widget _buildTitlePriceRow() {
+    return Container(
+        padding: EdgeInsets.only(
+          top: 10.0,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            title_Default(
+                product['title']), //This widget display title of product
+            SizedBox(
+              width: 8.0,
+            ),
+            price_tag(product['price'].toString()),
+          ],
+        ));
+  }
+
+  Widget _buildActionBar(BuildContext context) {
+    return ButtonBar(
+      alignment: MainAxisAlignment.center,
+      children: <Widget>[
+        IconButton(
+            icon: Icon(Icons.info),
+            color: Theme.of(context).accentColor,
+            onPressed: () => Navigator.pushNamed<bool>(
+                  //For generate a product we pass some info. of our product.
+                  context, '/product/' + productIndex.toString(),
+                )),
+        IconButton(
+          icon: Icon(Icons.favorite_border),
+          color: Colors.red,
+          onPressed: () {},
+        )
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Card(
+      child: Column(
+        children: <Widget>[
+          Image.asset(product['image']),
+          _buildTitlePriceRow(),
+          address_tag('Union Square, San Francisco'),
+          _buildActionBar(context)
+        ],
+      ),
+    );
+  }
+}
