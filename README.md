@@ -1,4 +1,4 @@
-# mytest_app
+# EasyList
 
 A new Flutter project.
 
