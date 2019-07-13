@@ -13,7 +13,6 @@ class _auth extends State<auth> {
   String _emailValue;
   String _passwordValue;
   bool _acceptingSwitch = false;
-  double scWi;
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
       image: AssetImage('assets/background.jpg'),
