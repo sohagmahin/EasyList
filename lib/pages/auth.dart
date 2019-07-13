@@ -85,7 +85,7 @@ class _auth extends State<auth> {
                     SizedBox(height: 10),
                     RaisedButton(
                       child: Text('Login'),
-                      color: Theme.of(context).primaryColor,
+                     color: Theme.of(context).primaryColor,
                       textColor: Colors.white,
                       onPressed: () => {
                         print(_emailValue),

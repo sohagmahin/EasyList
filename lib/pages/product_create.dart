@@ -81,7 +81,6 @@ class _productCreateState extends State<productCreate> {
               child: Text(
                 'Save',
               ),
-              color: Theme.of(context).accentColor,
               textColor: Colors.white,
               onPressed: _submitForm,
             )
