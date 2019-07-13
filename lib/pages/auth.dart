@@ -85,7 +85,7 @@ class _auth extends State<auth> {
                     _buildAcceptSwitch(),
                     SizedBox(height: 10),
                     RaisedButton(
-                      child: Text('LOGIN'),
+                      child: Text('Login'),
                       color: Theme.of(context).primaryColor,
                       textColor: Colors.white,
                       onPressed: () => {
