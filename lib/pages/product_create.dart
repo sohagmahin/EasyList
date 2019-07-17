@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class productCreate extends StatefulWidget {
   Function addProduct;
   Function deleteProduct;
-
   productCreate(this.addProduct, this.deleteProduct);
 
   @override
@@ -17,11 +16,12 @@ class _productCreateState extends State<productCreate> {
   String titleValue = '';
   String descriptionValue;
   double priceValue;
+  final GlobalKey<FormState> _formKey= new GlobalKey<FormState>();
 
   Widget _buildTitleTextField() {
-    return TextField(
+    return TextFormField(
         decoration: InputDecoration(labelText: 'Product Title'),
-        onChanged: (String value) {
+        onSaved: (String value) {
           setState(() {
             titleValue = value;
           });
@@ -29,10 +29,10 @@ class _productCreateState extends State<productCreate> {
   }
 
   Widget _buildDescriptionTextField() {
-    return TextField(
+    return TextFormField(
         maxLines: 4,
         decoration: InputDecoration(labelText: 'Product Description'),
-        onChanged: (String value) {
+        onSaved: (String value) {
           setState(() {
             descriptionValue = value;
           });
@@ -40,10 +40,10 @@ class _productCreateState extends State<productCreate> {
   }
 
   Widget _buildPriceTextField() {
-    return TextField(
+    return TextFormField(
         keyboardType: TextInputType.number,
         decoration: InputDecoration(labelText: 'Product Price'),
-        onChanged: (String value) {
+        onSaved: (String value) {
           setState(() {
             priceValue = double.parse(value);
           });
@@ -51,12 +51,14 @@ class _productCreateState extends State<productCreate> {
   }
 
   void _submitForm() {
+   _formKey.currentState.save();
     Map<String, dynamic> products = {
       'title': titleValue,
       'description': descriptionValue,
       'price': priceValue,
       'image': 'assets/food.jpg'
     };
+     
     widget.addProduct(products);
     Navigator.pushReplacementNamed(context, '/products');
   }
@@ -70,29 +72,31 @@ class _productCreateState extends State<productCreate> {
 
     return Container(
         margin: EdgeInsets.all(10.0),
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: targetPadding / 2),
-          children: <Widget>[
-            _buildTitleTextField(),
-            _buildDescriptionTextField(),
-            _buildPriceTextField(),
-            SizedBox(height: 10.0),
-            RaisedButton(
-              child: Text(
-                'Save',
-              ),
-              textColor: Colors.white,
-              onPressed: _submitForm,
-            )
-            // GestureDetector(
-            //   onTap: _submitForm,
-            //   child: Container(
-            //     color: Colors.red,
-            //     padding: EdgeInsets.all(10.0),
-            //     child: Text("My button"),
-            //   ),
-            // )
-          ],
-        ));
+        child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: EdgeInsets.symmetric(horizontal: targetPadding / 2),
+              children: <Widget>[
+                _buildTitleTextField(),
+                _buildDescriptionTextField(),
+                _buildPriceTextField(),
+                SizedBox(height: 10.0),
+                RaisedButton(
+                  child: Text(
+                    'Save',
+                  ),
+                  textColor: Colors.white,
+                  onPressed: _submitForm,
+                )
+                // GestureDetector(
+                //   onTap: _submitForm,
+                //   child: Container(
+                //     color: Colors.red,
+                //     padding: EdgeInsets.all(10.0),
+                //     child: Text("My button"),
+                //   ),
+                // )
+              ],
+            )));
   }
 }
