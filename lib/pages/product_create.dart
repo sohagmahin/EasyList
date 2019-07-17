@@ -21,6 +21,12 @@ class _productCreateState extends State<productCreate> {
   Widget _buildTitleTextField() {
     return TextFormField(
         decoration: InputDecoration(labelText: 'Product Title'),
+        //autovalidate: true,
+        validator: (String value){
+          if(value.isEmpty){
+            return "Title is empty!";
+          }
+        },
         onSaved: (String value) {
           setState(() {
             titleValue = value;
@@ -32,6 +38,11 @@ class _productCreateState extends State<productCreate> {
     return TextFormField(
         maxLines: 4,
         decoration: InputDecoration(labelText: 'Product Description'),
+        validator: (String value){
+          if(value.trim().length<8){
+            return "Description require more than eight text!";
+          }
+        },
         onSaved: (String value) {
           setState(() {
             descriptionValue = value;
@@ -43,6 +54,11 @@ class _productCreateState extends State<productCreate> {
     return TextFormField(
         keyboardType: TextInputType.number,
         decoration: InputDecoration(labelText: 'Product Price'),
+        validator: (String value){
+          if(value.isEmpty){
+            return "Price is empty!";
+          }
+        },
         onSaved: (String value) {
           setState(() {
             priceValue = double.parse(value);
@@ -51,6 +67,9 @@ class _productCreateState extends State<productCreate> {
   }
 
   void _submitForm() {
+    if(!_formKey.currentState.validate()){
+      return;
+    }
    _formKey.currentState.save();
     Map<String, dynamic> products = {
       'title': titleValue,
