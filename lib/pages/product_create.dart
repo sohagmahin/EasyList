@@ -23,8 +23,8 @@ class _productCreateState extends State<productCreate> {
         decoration: InputDecoration(labelText: 'Product Title'),
         //autovalidate: true,
         validator: (String value){
-          if(value.isEmpty){
-            return "Title is empty!";
+          if(value.isEmpty || value.length<5){
+            return "Title is required and Should be 5+ characters long!";
           }
         },
         onSaved: (String value) {
@@ -40,7 +40,7 @@ class _productCreateState extends State<productCreate> {
         decoration: InputDecoration(labelText: 'Product Description'),
         validator: (String value){
           if(value.trim().length<8){
-            return "Description require more than eight text!";
+            return "Description is required and Should be 8+ characters long!";
           }
         },
         onSaved: (String value) {
@@ -55,8 +55,8 @@ class _productCreateState extends State<productCreate> {
         keyboardType: TextInputType.number,
         decoration: InputDecoration(labelText: 'Product Price'),
         validator: (String value){
-          if(value.isEmpty){
-            return "Price is empty!";
+          if(value.isEmpty || !RegExp(r'^(?:[1-9]\d*|0)?(?:\.\d+)?$').hasMatch(value)){
+            return "Price is required and should be number!";
           }
         },
         onSaved: (String value) {
