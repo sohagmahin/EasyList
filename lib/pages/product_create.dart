@@ -92,7 +92,7 @@ class _productCreateState extends State<productCreate> {
 
     return GestureDetector(
         onTap: () {
-          //For desiable keyboard.
+          //For disable keyboard.
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: Container(
