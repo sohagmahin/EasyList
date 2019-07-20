@@ -10,9 +10,15 @@ class auth extends StatefulWidget {
 }
 
 class _auth extends State<auth> {
-  String _emailValue;
-  String _passwordValue;
-  bool _acceptingSwitch = false;
+  final Map<String, dynamic> _formData = {
+    'email': null,
+    'password': null,
+    'acceptSwitch': false
+  };
+  // String _emailValue;
+  // String _passwordValue;
+  // bool _acceptingSwitch = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
       image: AssetImage('assets/background.jpg'),
@@ -23,41 +29,58 @@ class _auth extends State<auth> {
   }
 
   Widget _buildEmailTextField() {
-    return TextField(
+    return TextFormField(
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
           labelText: 'Email', filled: true, fillColor: Colors.white),
-      onChanged: (String value) {
-        setState(() {
-          _emailValue = value;
-        });
+      validator: (String value) {
+        if (value.isEmpty ||
+            !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                .hasMatch(value)) {
+          return 'Please enter a valid email!';
+        }
+      },
+      onSaved: (String value) {
+        _formData['email'] = value;
       },
     );
   }
 
   Widget _buildPasswordTextField() {
-    return TextField(
+    return TextFormField(
       decoration: InputDecoration(
           labelText: 'Password', filled: true, fillColor: Colors.white),
       obscureText: true,
-      onChanged: (String value) {
-        setState(() {
-          _passwordValue = value;
-        });
+      validator: (String value) {
+        if (value.isEmpty || value.length < 5) {
+          return 'Password invalid!';
+        }
+      },
+      onSaved: (String value) {
+        _formData['password'] = value;
       },
     );
   }
 
   Widget _buildAcceptSwitch() {
     return SwitchListTile(
-      value: _acceptingSwitch,
+      value: _formData['acceptSwitch'],
       onChanged: (bool value) {
         setState(() {
-          _acceptingSwitch = value;
+          _formData['acceptSwitch'] = value;
         });
       },
       title: Text('Accept terms'),
     );
+  }
+
+  void _submitForm() {
+    if (!_formKey.currentState.validate() || !_formData['acceptSwitch']) {
+      return;
+    }
+    _formKey.currentState.save();
+    print(_formData);
+    Navigator.pushReplacementNamed(context, '/products');
   }
 
   @override
@@ -71,6 +94,7 @@ class _auth extends State<auth> {
         appBar: AppBar(title: Text('LOGIN PANNEL')),
         body: GestureDetector(
             onTap: () {
+              //for disable keybord
               FocusScope.of(context).requestFocus(FocusNode());
             },
             child: Container(
@@ -80,25 +104,23 @@ class _auth extends State<auth> {
                     child: SingleChildScrollView(
                   child: Container(
                     width: targetWidth,
-                    child: Column(
-                      children: <Widget>[
-                        _buildEmailTextField(),
-                        SizedBox(height: 10.0),
-                        _buildPasswordTextField(),
-                        _buildAcceptSwitch(),
-                        SizedBox(height: 10),
-                        RaisedButton(
-                          child: Text('Login'),
-                          color: Theme.of(context).primaryColor,
-                          textColor: Colors.white,
-                          onPressed: () => {
-                            print(_emailValue),
-                            print(_passwordValue),
-                            Navigator.pushReplacementNamed(
-                                context, '/products'),
-                          },
-                        ),
-                      ],
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                          _buildEmailTextField(),
+                          SizedBox(height: 10.0),
+                          _buildPasswordTextField(),
+                          _buildAcceptSwitch(),
+                          SizedBox(height: 10),
+                          RaisedButton(
+                            child: Text('Login'),
+                            color: Theme.of(context).primaryColor,
+                            textColor: Colors.white,
+                            onPressed: _submitForm,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 )))));
