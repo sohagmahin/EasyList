@@ -5,10 +5,11 @@ import '../pages/product_edit.dart';
 class productAdmin extends StatelessWidget {
   Function addProduct;
   Function deleteProduct;
+  Function updateProduct;
   List<Map<String, dynamic>> _products;
   
 
-  productAdmin(this.addProduct, this.deleteProduct, this._products);
+  productAdmin(this.addProduct,this.updateProduct, this.deleteProduct, this._products);
   Widget _buildSideDrawer(BuildContext context) {
     return Drawer(
       child: Column(
@@ -54,7 +55,7 @@ class productAdmin extends StatelessWidget {
             body: TabBarView(
               children: <Widget>[
                 productEdit(addProduct: addProduct),
-                productListPage(_products)
+                productListPage(_products,updateProduct)
               ],
             )));
   }

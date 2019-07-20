@@ -4,7 +4,8 @@ class productEdit extends StatefulWidget {
   Function addProduct;
   Function updateProduct;
   Map<String, dynamic> product;
-  productEdit({this.addProduct, this.updateProduct, this.product});
+  int productIndex;
+  productEdit({this.addProduct, this.updateProduct, this.product,this.productIndex});
 
   @override
   State<StatefulWidget> createState() {
@@ -25,7 +26,7 @@ class _productEditState extends State<productEdit> {
     return TextFormField(
         decoration: InputDecoration(labelText: 'Product Title'),
         //autovalidate: true,
-        initialValue: widget.product == null ? " " : widget.product['title'],
+        initialValue: widget.product == null ? '': widget.product['title'],
         validator: (String value) {
           if (value.isEmpty || value.length < 5) {
             return "Title is required and Should be 5+ characters long!";
@@ -40,7 +41,8 @@ class _productEditState extends State<productEdit> {
     return TextFormField(
         maxLines: 4,
         decoration: InputDecoration(labelText: 'Product Description'),
-        initialValue: widget.product == null ? " " : widget.product['description'],
+        initialValue:
+            widget.product == null ? '' : widget.product['description'],
         validator: (String value) {
           if (value.trim().length < 8) {
             return "Description is required and Should be 8+ characters long!";
@@ -55,7 +57,8 @@ class _productEditState extends State<productEdit> {
     return TextFormField(
         keyboardType: TextInputType.number,
         decoration: InputDecoration(labelText: 'Product Price'),
-        initialValue: widget.product == null ? ' ' : widget.product['price'].toString(),
+        initialValue:
+            widget.product == null ? '' : widget.product['price'].toString(),
         validator: (String value) {
           if (value.isEmpty ||
               !RegExp(r'^(?:[1-9]\d*|0)?(?:\.\d+)?$').hasMatch(value)) {
@@ -72,7 +75,11 @@ class _productEditState extends State<productEdit> {
       return;
     }
     _formKey.currentState.save();
-    widget.addProduct(_formData);
+    if (widget.product == null) {
+      widget.addProduct(_formData);
+    }else if(widget.product!=null){
+      widget.updateProduct(widget.productIndex,_formData);
+    }
     Navigator.pushReplacementNamed(context, '/products');
   }
 
