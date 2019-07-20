@@ -6,9 +6,9 @@ class productAdmin extends StatelessWidget {
   Function addProduct;
   Function deleteProduct;
   List<Map<String, dynamic>> _products;
+  
 
   productAdmin(this.addProduct, this.deleteProduct, this._products);
-
   Widget _buildSideDrawer(BuildContext context) {
     return Drawer(
       child: Column(

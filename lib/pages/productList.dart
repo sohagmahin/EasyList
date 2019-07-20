@@ -16,7 +16,10 @@ class productListPage extends StatelessWidget {
           trailing: IconButton(
             icon: Icon(Icons.edit),
             onPressed: () {
-              productEdit(product: _products[index]);
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context) => productEdit(
+                        product: _products[index],
+                      )));
             },
           ),
         );
