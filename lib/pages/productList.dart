@@ -7,6 +7,20 @@ class productListPage extends StatelessWidget {
   final Function deleteProduct;
   productListPage(this._products, this.updateProduct, this.deleteProduct);
 
+  Widget _buildEditIconButton(BuildContext context, int index) {
+    return IconButton(
+      icon: Icon(Icons.edit),
+      onPressed: () {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (BuildContext context) => productEdit(
+                  product: _products[index],
+                  updateProduct: updateProduct,
+                  productIndex: index,
+                )));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // return Center(child: Image.asset(_products[0]['image']),);
@@ -30,17 +44,7 @@ class productListPage extends StatelessWidget {
                 ),
                 subtitle: Text('\$${_products[index]['price']}'),
                 title: Text(_products[index]['title']),
-                trailing: IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => productEdit(
-                              product: _products[index],
-                              updateProduct: updateProduct,
-                              productIndex: index,
-                            )));
-                  },
-                ),
+                trailing: _buildEditIconButton(context, index),
               ),
               Divider()
             ],
