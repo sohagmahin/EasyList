@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import './product_card.dart';
+import '../../models/product.dart';
 
-class Product extends StatelessWidget {
-  final List<Map<String, dynamic>> products;
+class Products extends StatelessWidget {
+  final List<Product> products;
 
-  Product(this.products);
+  Products(this.products);
   Widget _buildProductList() {
     Widget productCard;
     if (products.length > 0) {

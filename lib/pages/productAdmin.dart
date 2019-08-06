@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import '../pages/productList.dart';
 import '../pages/product_edit.dart';
+import '../models/product.dart';
 
 class ProductAdmin extends StatelessWidget {
   final Function addProduct;
   final Function deleteProduct;
   final Function updateProduct;
-  final List<Map<String, dynamic>> _products;
+  final List<Product> _products;
   
 
   ProductAdmin(this.addProduct,this.updateProduct, this.deleteProduct, this._products);

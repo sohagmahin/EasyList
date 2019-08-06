@@ -3,6 +3,7 @@ import './pages/productAdmin.dart';
 import './pages/products.dart';
 import './pages/product.dart';
 import './pages/auth.dart';
+import './models/product.dart';
 
 void main() {
   //debugPaintSizeEnabled=true;
@@ -17,9 +18,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  List<Map<String, dynamic>> _products = [];
+  List<Product> _products = [];
 
-  void _addProduct(Map<String, dynamic> product) {
+  void _addProduct(Product product) {
     setState(() {
       _products.add(product);
     });
@@ -31,9 +32,9 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void _updateProduct(int index,Map<String,dynamic>product){
+  void _updateProduct(int index, Product product) {
     setState(() {
-      _products[index]=product;
+      _products[index] = product;
     });
   }
 
@@ -41,18 +42,18 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        brightness: Brightness.light,
-        primarySwatch: Colors.deepOrange,
-        accentColor: Colors.deepPurple,
-        buttonColor: Colors.purple
-        // fontFamily: 'Oswald'
-      ),
+          brightness: Brightness.light,
+          primarySwatch: Colors.deepOrange,
+          accentColor: Colors.deepPurple,
+          buttonColor: Colors.purple
+          // fontFamily: 'Oswald'
+          ),
       //home: auth() ,
       routes: {
         '/': (BuildContext context) => Auth(),
         '/products': (BuildContext context) => ProductsPage(_products),
         '/admin': (BuildContext context) =>
-            ProductAdmin(_addProduct,_updateProduct, _deleteProduct,_products)
+            ProductAdmin(_addProduct, _updateProduct, _deleteProduct, _products)
       },
       onGenerateRoute: (RouteSettings setting) {
         final List<String> pathElement = setting.name.split('/');
@@ -63,11 +64,12 @@ class _MyAppState extends State<MyApp> {
         if (pathElement[1] == 'product') {
           final int index = int.parse(pathElement[2]);
           return MaterialPageRoute<bool>(
-              builder: (BuildContext context) => ProductPages(
-                  _products[index]['title'],
-                  _products[index]['image'],
-                  _products[index]['description'],
-                  _products[index]['price']));
+            builder: (BuildContext context) => ProductPages(
+                _products[index].title,
+                _products[index].image,
+                _products[index].description,
+                _products[index].price),
+          );
         }
         return null;
       },

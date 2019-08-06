@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/products/products.dart';
-
+import '../models/product.dart';
 class ProductsPage extends StatelessWidget {
-  final  List<Map<String, dynamic>> productsList;
+  final  List<Product> productsList;
   ProductsPage(this.productsList);
   
   Widget _buildSideDrawer(BuildContext context) {
@@ -39,7 +39,7 @@ class ProductsPage extends StatelessWidget {
           )
         ],
       ),
-      body: Product(productsList),
+      body: Products(productsList),
     );
   }
 }
