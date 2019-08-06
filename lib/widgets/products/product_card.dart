@@ -3,10 +3,10 @@ import './price_tag.dart';
 import '../ui_elements/title_Default.dart';
 import './address_tag.dart';
 
-class product_card extends StatelessWidget {
-  Map<String, dynamic> product;
+class ProductCard extends StatelessWidget {
+  final Map<String, dynamic> product;
   final int productIndex;
-  product_card(this.product, this.productIndex);
+  ProductCard(this.product, this.productIndex);
 
   Widget _buildTitlePriceRow() {
     return Container(
@@ -16,12 +16,12 @@ class product_card extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            title_Default(
+            TitleDefault(
                 product['title']), //This widget display title of product
             SizedBox(
               width: 8.0,
             ),
-            price_tag(product['price'].toString()),
+            PriceTag(product['price'].toString()),
           ],
         ));
   }
@@ -48,13 +48,12 @@ class product_card extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Card(
       child: Column(
         children: <Widget>[
           Image.asset(product['image']),
           _buildTitlePriceRow(),
-          address_tag('Union Square, San Francisco'),
+          AddressTag('Union Square, San Francisco'),
           _buildActionBar(context)
         ],
       ),

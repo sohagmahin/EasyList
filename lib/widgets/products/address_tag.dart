@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-class address_tag extends StatelessWidget {
+class AddressTag extends StatelessWidget {
   final String address;
-  address_tag(this.address);
+  AddressTag(this.address);
   
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.5),
       decoration: BoxDecoration(

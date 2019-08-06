@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import './products.dart';
 
-class auth extends StatefulWidget {
+class Auth extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _auth();
+    return _Auth();
   }
 }
 
-class _auth extends State<auth> {
+class _Auth extends State<Auth> {
   final Map<String, dynamic> _formData = {
     'email': null,
     'password': null,
@@ -19,6 +17,7 @@ class _auth extends State<auth> {
   // String _passwordValue;
   // bool _acceptingSwitch = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
       image: AssetImage('assets/background.jpg'),
@@ -28,18 +27,24 @@ class _auth extends State<auth> {
     );
   }
 
+  String validatorEmail(String value) {
+    return value.isEmpty ||
+            !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                .hasMatch(value)
+        ? 'Please enter a valid email!'
+        : null;
+  }
+
+  String validatorPassword(String value) {
+    return value.isEmpty || value.length < 5 ? 'Password invalid!' : null;
+  }
+
   Widget _buildEmailTextField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
           labelText: 'Email', filled: true, fillColor: Colors.white),
-      validator: (String value) {
-        if (value.isEmpty ||
-            !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-                .hasMatch(value)) {
-          return 'Please enter a valid email!';
-        }
-      },
+      validator: validatorEmail,
       onSaved: (String value) {
         _formData['email'] = value;
       },
@@ -51,11 +56,7 @@ class _auth extends State<auth> {
       decoration: InputDecoration(
           labelText: 'Password', filled: true, fillColor: Colors.white),
       obscureText: true,
-      validator: (String value) {
-        if (value.isEmpty || value.length < 5) {
-          return 'Password invalid!';
-        }
-      },
+      validator: validatorPassword,
       onSaved: (String value) {
         _formData['password'] = value;
       },

@@ -4,12 +4,12 @@ import 'package:flutter/widgets.dart';
 import '../widgets/ui_elements/title_Default.dart';
 
 //single product page
-class productPages extends StatelessWidget {
+class ProductPages extends StatelessWidget {
   final String title;
   final String imageUrl;
   final String description;
   final double priceTag;
-  productPages(this.title, this.imageUrl, this.description, this.priceTag);
+  ProductPages(this.title, this.imageUrl, this.description, this.priceTag);
 
   _buildAddressPiceRow(BuildContext context) {
     return Row(
@@ -54,7 +54,7 @@ class productPages extends StatelessWidget {
                   Image.asset(imageUrl),
                   Container(
                     padding: EdgeInsets.all(10.0),
-                    child: title_Default(title),
+                    child: TitleDefault(title),
                   ),
                   _buildAddressPiceRow(context),
                   Container(

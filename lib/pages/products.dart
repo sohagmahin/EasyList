@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../widgets/products/products.dart';
 
-class productsPage extends StatelessWidget {
-  List<Map<String, dynamic>> productsList = [];
-  productsPage(this.productsList);
+class ProductsPage extends StatelessWidget {
+  final  List<Map<String, dynamic>> productsList;
+  ProductsPage(this.productsList);
   
   Widget _buildSideDrawer(BuildContext context) {
     return Drawer(
@@ -28,7 +28,6 @@ class productsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return new Scaffold(
       drawer: _buildSideDrawer(context),
       appBar: new AppBar(
@@ -40,7 +39,7 @@ class productsPage extends StatelessWidget {
           )
         ],
       ),
-      body: product(productsList),
+      body: Product(productsList),
     );
   }
 }

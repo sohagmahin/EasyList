@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import './product_edit.dart';
 
-class productListPage extends StatelessWidget {
-  List<Map<String, dynamic>> _products;
+class ProductListPage extends StatelessWidget {
+  final List<Map<String, dynamic>> _products;
   final Function updateProduct;
   final Function deleteProduct;
-  productListPage(this._products, this.updateProduct, this.deleteProduct);
+  ProductListPage(this._products, this.updateProduct, this.deleteProduct);
 
   Widget _buildEditIconButton(BuildContext context, int index) {
     return IconButton(
       icon: Icon(Icons.edit),
       onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (BuildContext context) => productEdit(
+            builder: (BuildContext context) => ProductEdit(
                   product: _products[index],
                   updateProduct: updateProduct,
                   productIndex: index,

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import '../widgets/helpers/ensure_visible.dart';
 
-class productEdit extends StatefulWidget {
-  Function addProduct;
-  Function updateProduct;
-  Map<String, dynamic> product;
-  int productIndex;
-  productEdit(
+class ProductEdit extends StatefulWidget {
+  final Function addProduct;
+  final Function updateProduct;
+  final Map<String, dynamic> product;
+  final int productIndex;
+  ProductEdit(
       {this.addProduct, this.updateProduct, this.product, this.productIndex});
 
   @override
   State<StatefulWidget> createState() {
-    return _productEditState();
+    return _ProductEditState();
   }
 }
 
-class _productEditState extends State<productEdit> {
+class _ProductEditState extends State<ProductEdit> {
   final Map<String, dynamic> _formData = {
     'title': null,
     'description': null,
@@ -28,6 +28,25 @@ class _productEditState extends State<productEdit> {
   final _descriptionFocusNode = FocusNode();
   final _priceFocusNode = FocusNode();
 
+  String validatorTitle(String value) {
+    return value.isEmpty || value.length < 5
+        ? "Title is required and Should be 5+ characters long!"
+        : null;
+  }
+
+  String validatorDescription(String value) {
+    return value.trim().length < 8 || value.isEmpty
+        ? "Description is required and Should be 8+ characters long!"
+        : null;
+  }
+
+  String validatorPrice(String value) {
+    return value.isEmpty ||
+            !RegExp(r'^(?:[1-9]\d*|0)?(?:\.\d+)?$').hasMatch(value)
+        ? "Price is required and should be number!"
+        : null;
+  }
+
   Widget _buildTitleTextField() {
     return EnsureVisibleWhenFocused(
         focusNode: _titleFocusNode,
@@ -36,11 +55,7 @@ class _productEditState extends State<productEdit> {
             decoration: InputDecoration(labelText: 'Product Title'),
             //autovalidate: true,
             initialValue: widget.product == null ? '' : widget.product['title'],
-            validator: (String value) {
-              if (value.isEmpty || value.length < 5) {
-                return "Title is required and Should be 5+ characters long!";
-              }
-            },
+            validator: validatorTitle,
             onSaved: (String value) {
               _formData['title'] = value;
             }));
@@ -55,11 +70,7 @@ class _productEditState extends State<productEdit> {
             decoration: InputDecoration(labelText: 'Product Description'),
             initialValue:
                 widget.product == null ? '' : widget.product['description'],
-            validator: (String value) {
-              if (value.trim().length < 8) {
-                return "Description is required and Should be 8+ characters long!";
-              }
-            },
+            validator: validatorDescription,
             onSaved: (String value) {
               _formData['description'] = value;
             }));
@@ -75,12 +86,7 @@ class _productEditState extends State<productEdit> {
             initialValue: widget.product == null
                 ? ''
                 : widget.product['price'].toString(),
-            validator: (String value) {
-              if (value.isEmpty ||
-                  !RegExp(r'^(?:[1-9]\d*|0)?(?:\.\d+)?$').hasMatch(value)) {
-                return "Price is required and should be number!";
-              }
-            },
+            validator: validatorPrice,
             onSaved: (String value) {
               _formData['price'] = double.parse(value);
             }));
@@ -127,14 +133,6 @@ class _productEditState extends State<productEdit> {
                       textColor: Colors.white,
                       onPressed: _submitForm,
                     )
-                    // GestureDetector(
-                    //   onTap: _submitForm,
-                    //   child: Container(
-                    //     color: Colors.red,
-                    //     padding: EdgeInsets.all(10.0),
-                    //     child: Text("My button"),
-                    //   ),
-                    // )
                   ],
                 ))));
   }
