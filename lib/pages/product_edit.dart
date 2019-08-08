@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import '../widgets/helpers/ensure_visible.dart';
 import '../models/product.dart';
 
-class ProductEdit extends StatefulWidget {
+import 'package:scoped_model/scoped_model.dart';
+import '../scoped-model/products.dart';
+
+class ProductEditPage extends StatefulWidget {
   final Function addProduct;
   final Function updateProduct;
   final Product product;
   final int productIndex;
-  ProductEdit(
+  ProductEditPage(
       {this.addProduct, this.updateProduct, this.product, this.productIndex});
 
   @override
@@ -16,7 +19,7 @@ class ProductEdit extends StatefulWidget {
   }
 }
 
-class _ProductEditState extends State<ProductEdit> {
+class _ProductEditState extends State<ProductEditPage> {
   final Map<String, dynamic> _formData = {
     'title': null,
     'description': null,
@@ -92,13 +95,13 @@ class _ProductEditState extends State<ProductEdit> {
             }));
   }
 
-  void _submitForm() {
+  void _submitForm(Function addProduct, Function updateProduct) {
     if (!_formKey.currentState.validate()) {
       return;
     }
     _formKey.currentState.save();
     if (widget.product == null) {
-      widget.addProduct(
+      addProduct(
         Product(
             title: _formData['title'],
             description: _formData['description'],
@@ -106,7 +109,8 @@ class _ProductEditState extends State<ProductEdit> {
             image: _formData['image']),
       );
     } else if (widget.product != null) {
-      widget.updateProduct(widget.productIndex,
+      updateProduct(
+        widget.productIndex,
         Product(
             title: _formData['title'],
             description: _formData['description'],
@@ -115,6 +119,20 @@ class _ProductEditState extends State<ProductEdit> {
       );
     }
     Navigator.pushReplacementNamed(context, '/products');
+  }
+
+  Widget _buildSubmitButton() {
+    return ScopedModelDescendant<ProductsModel>(
+      builder: (BuildContext context, Widget child, ProductsModel model) {
+        return RaisedButton(
+          child: Text(
+            'Save',
+          ),
+          textColor: Colors.white,
+          onPressed: () => _submitForm(model.addProduct, model.updateProduct),
+        );
+      },
+    );
   }
 
   Widget _buildPageContent(BuildContext context) {
@@ -138,13 +156,7 @@ class _ProductEditState extends State<ProductEdit> {
                     _buildDescriptionTextField(),
                     _buildPriceTextField(),
                     SizedBox(height: 10.0),
-                    RaisedButton(
-                      child: Text(
-                        'Save',
-                      ),
-                      textColor: Colors.white,
-                      onPressed: _submitForm,
-                    )
+                    _buildSubmitButton(),
                   ],
                 ))));
   }

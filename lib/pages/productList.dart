@@ -13,7 +13,7 @@ class ProductListPage extends StatelessWidget {
       icon: Icon(Icons.edit),
       onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (BuildContext context) => ProductEdit(
+            builder: (BuildContext context) => ProductEditPage(
                   product: _products[index],
                   updateProduct: updateProduct,
                   productIndex: index,
@@ -31,6 +31,11 @@ class ProductListPage extends StatelessWidget {
           key: Key(_products[index].title),
           background: Container(
             color: Colors.red,
+            child: Container(
+                padding: EdgeInsets.only(right: 12.0),
+                alignment: Alignment.centerRight,
+
+                child: Icon(Icons.delete,size: 32.0,)),
           ),
           onDismissed: (DismissDirection direction) {
             if (direction == DismissDirection.endToStart) {
