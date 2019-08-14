@@ -3,7 +3,7 @@ import '../widgets/helpers/ensure_visible.dart';
 import '../models/product.dart';
 
 import 'package:scoped_model/scoped_model.dart';
-import '../scoped-model/products.dart';
+import '../scoped-model/main.dart';
 
 class ProductEditPage extends StatefulWidget {
   @override
@@ -114,8 +114,8 @@ class _ProductEditState extends State<ProductEditPage> {
   }
 
   Widget _buildSubmitButton() {
-    return ScopedModelDescendant<ProductsModel>(
-      builder: (BuildContext context, Widget child, ProductsModel model) {
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         return RaisedButton(
           child: Text(
             'Save',
@@ -155,8 +155,8 @@ class _ProductEditState extends State<ProductEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<ProductsModel>(
-      builder: (BuildContext context, Widget child, ProductsModel model) {
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         final Widget pageContent = _buildPageContent(context,model.selectedProduct);
         return model.selectedProductIndex == null
             ? pageContent
