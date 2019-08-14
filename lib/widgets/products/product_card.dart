@@ -4,6 +4,9 @@ import '../ui_elements/title_Default.dart';
 import './address_tag.dart';
 import '../../models/product.dart';
 
+import 'package:scoped_model/scoped_model.dart';
+import '../../scoped-model/products.dart';
+
 class ProductCard extends StatelessWidget {
   final Product product;
   final int productIndex;
@@ -17,8 +20,7 @@ class ProductCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TitleDefault(
-                product.title), //This widget display title of product
+            TitleDefault(product.title), //This widget display title of product
             SizedBox(
               width: 8.0,
             ),
@@ -38,10 +40,19 @@ class ProductCard extends StatelessWidget {
                   //For generate a product we pass some info. of our product.
                   context, '/product/' + productIndex.toString(),
                 )),
-        IconButton(
-          icon: Icon(Icons.favorite_border),
-          color: Colors.red,
-          onPressed: () {},
+        ScopedModelDescendant<ProductsModel>(
+          builder: (BuildContext context, Widget child, ProductsModel model) {
+            return IconButton(
+              icon: Icon(model.products[productIndex].isFavorite
+                  ? Icons.favorite
+                  : Icons.favorite_border),
+              color: Colors.red,
+              onPressed: () {
+                model.selectProduct(productIndex);
+                model.toggleProductFavoriteStatus();
+              },
+            );
+          },
         )
       ],
     );
