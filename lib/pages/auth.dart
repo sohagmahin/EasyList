@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
+import '../scoped-model/main.dart';
 
 class Auth extends StatefulWidget {
   @override
@@ -75,12 +77,12 @@ class _Auth extends State<Auth> {
     );
   }
 
-  void _submitForm() {
+  void _submitForm(Function login) {
     if (!_formKey.currentState.validate() || !_formData['acceptSwitch']) {
       return;
     }
     _formKey.currentState.save();
-    print(_formData);
+    login(_formData['email'], _formData['password']);
     Navigator.pushReplacementNamed(context, '/products');
   }
 
@@ -114,11 +116,16 @@ class _Auth extends State<Auth> {
                           _buildPasswordTextField(),
                           _buildAcceptSwitch(),
                           SizedBox(height: 10),
-                          RaisedButton(
-                            child: Text('Login'),
-                            color: Theme.of(context).primaryColor,
-                            textColor: Colors.white,
-                            onPressed: _submitForm,
+                          ScopedModelDescendant<MainModel>(
+                            builder: (BuildContext context, Widget child,
+                                MainModel model) {
+                              return RaisedButton(
+                                child: Text('Login'),
+                                color: Theme.of(context).primaryColor,
+                                textColor: Colors.white,
+                                onPressed: () => _submitForm(model.login),
+                              );
+                            },
                           ),
                         ],
                       ),
