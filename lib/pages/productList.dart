@@ -16,7 +16,9 @@ class ProductListPage extends StatelessWidget {
               MaterialPageRoute(
                 builder: (BuildContext context) => ProductEditPage(),
               ),
-            );
+            ).then((_){
+              model.selectProduct(null);
+            });
           },
         );
   }
@@ -28,7 +30,7 @@ class ProductListPage extends StatelessWidget {
         return ListView.builder(
           itemBuilder: (BuildContext context, int index) {
             return Dismissible(
-              key: Key(model.products[index].title),
+              key: Key(model.allproducts[index].title),
               background: Container(
                 color: Colors.red,
                 child: Container(
