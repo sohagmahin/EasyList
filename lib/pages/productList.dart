@@ -49,10 +49,10 @@ class ProductListPage extends StatelessWidget {
                 children: <Widget>[
                   ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: AssetImage(model.products[index].image),
+                      backgroundImage: AssetImage(model.allproducts[index].image),
                     ),
-                    subtitle: Text('\$${model.products[index].price.toString()}'),
-                    title: Text(model.products[index].title),
+                    subtitle: Text('\$${model.allproducts[index].price.toString()}'),
+                    title: Text(model.allproducts[index].title),
                     trailing: _buildEditIconButton(context, index,model),
                   ),
                   Divider()
@@ -60,7 +60,7 @@ class ProductListPage extends StatelessWidget {
               ),
             );
           },
-          itemCount: model.products.length,
+          itemCount: model.allproducts.length,
         );
       },
     );
