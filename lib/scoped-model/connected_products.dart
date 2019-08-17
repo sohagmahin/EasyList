@@ -2,6 +2,9 @@ import 'package:scoped_model/scoped_model.dart';
 import '../models/product.dart';
 import '../models/user.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 mixin ConnectedProductsModel on Model {
   List<Product> _products = [];
   User _authenticatedUser;
@@ -9,6 +12,16 @@ mixin ConnectedProductsModel on Model {
 
   void addProduct(
       String title, String description, String image, double price) {
+    final Map<String, dynamic> productData = {
+      'title': title,
+      'description': description,
+      'image':
+          'https://i0.wp.com/www.royalbeans.in/wp-content/uploads/2017/09/Roasted-Almond-Milk-Chocolate-Bar-Royal-Beans-Chocolates.jpg?fit=2223%2C3000&ssl=1',
+      'price': price
+    };
+    http.post('https://fllutter-products.firebaseio.com/products.json',
+        body: json.encode(productData));
+
     final Product newProduct = Product(
         title: title,
         description: description,
@@ -22,16 +35,15 @@ mixin ConnectedProductsModel on Model {
 }
 
 mixin ProductsModel on ConnectedProductsModel {
-  
-  bool _showFavorites=false;
+  bool _showFavorites = false;
 
   List<Product> get allproducts {
     return List.from(_products);
   }
 
   List<Product> get displayedProducts {
-    if(_showFavorites){
-    return _products.where((Product product)=>product.isFavorite).toList();
+    if (_showFavorites) {
+      return _products.where((Product product) => product.isFavorite).toList();
     }
     return List.from(_products);
   }
@@ -47,7 +59,7 @@ mixin ProductsModel on ConnectedProductsModel {
     return _products[selectedProductIndex];
   }
 
-  bool get displayFavoritesOnly{
+  bool get displayFavoritesOnly {
     return _showFavorites;
   }
 
@@ -56,8 +68,9 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
   }
 
-   void updateProduct(String title, String description, String image, double price) {
-     final Product updatedProduct = Product(
+  void updateProduct(
+      String title, String description, String image, double price) {
+    final Product updatedProduct = Product(
         title: title,
         description: description,
         image: image,
@@ -79,16 +92,15 @@ mixin ProductsModel on ConnectedProductsModel {
         userEmail: selectedProduct.userEmail,
         userId: selectedProduct.userId,
         isFavorite: newFavoriteStatus);
-        _products[selectedProductIndex]=updatedProduct;
-        notifyListeners();
-        _selProductIndex=null;
+    _products[selectedProductIndex] = updatedProduct;
+    notifyListeners();
+    _selProductIndex = null;
   }
 
-  void toggleDisplayMode(){
-    _showFavorites=!_showFavorites;
+  void toggleDisplayMode() {
+    _showFavorites = !_showFavorites;
     notifyListeners();
   }
-
 
   void selectProduct(int index) {
     _selProductIndex = index;
@@ -96,10 +108,8 @@ mixin ProductsModel on ConnectedProductsModel {
   }
 }
 
-mixin UserModel on ConnectedProductsModel{
-  
-  void login(String email,String password){
-    _authenticatedUser = User('sfdsfsd',email,password);
-    
+mixin UserModel on ConnectedProductsModel {
+  void login(String email, String password) {
+    _authenticatedUser = User('sfdsfsd', email, password);
   }
 }
