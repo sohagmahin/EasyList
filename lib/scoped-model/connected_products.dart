@@ -25,7 +25,8 @@ mixin ConnectedProductsModel on Model {
       'userEmail': _authenticatedUser.email,
       'userId': _authenticatedUser.id
     };
-    return http.post('https://fllutter-products.firebaseio.com/products.json',
+    return http
+        .post('https://fllutter-products.firebaseio.com/products.json',
             body: json.encode(productData))
         .then((http.Response response) {
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -79,17 +80,36 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
   }
 
-  void updateProduct(
+  Future<Null> updateProduct(
       String title, String description, String image, double price) {
-    final Product updatedProduct = Product(
-        title: title,
-        description: description,
-        image: image,
-        price: price,
-        userEmail: selectedProduct.userEmail,
-        userId: selectedProduct.userId);
-    _products[selectedProductIndex] = updatedProduct;
+    _isLoading = true;
     notifyListeners();
+    final Map<String, dynamic> product = {
+      'title': title,
+      'description': description,
+      'image':
+          'https://i0.wp.com/www.royalbeans.in/wp-content/uploads/2017/09/Roasted-Almond-Milk-Chocolate-Bar-Royal-Beans-Chocolates.jpg?fit=2223%2C3000&ssl=1',
+      'price': price,
+      'userEmail': _authenticatedUser.email,
+      'userId': _authenticatedUser.password
+    };
+   return http
+        .put(
+            'https://fllutter-products.firebaseio.com/products/${selectedProduct.id}.json',
+            body: json.encode(product))
+        .then((_) {
+      _isLoading = false;
+      final Product updatedProduct = Product(
+          id: selectedProduct.id,
+          title: title,
+          description: description,
+          image: image,
+          price: price,
+          userEmail: selectedProduct.userEmail,
+          userId: selectedProduct.userId);
+      _products[selectedProductIndex] = updatedProduct;
+      notifyListeners();
+    });
   }
 
   void toggleProductFavoriteStatus() {
@@ -124,13 +144,12 @@ mixin ProductsModel on ConnectedProductsModel {
     http
         .get('https://fllutter-products.firebaseio.com/products.json')
         .then((http.Response response) {
-      
       final List<Product> fetchedproductList = [];
       Map<String, dynamic> productListData = json.decode(response.body);
-      if(productListData == null){
-        _isLoading= false;
+      if (productListData == null) {
+        _isLoading = false;
         notifyListeners();
-        return ;
+        return;
       }
       productListData.forEach((String key, dynamic product) {
         final Product fetchProdcut = Product(
@@ -156,8 +175,8 @@ mixin UserModel on ConnectedProductsModel {
   }
 }
 
-mixin UtilityModel on ConnectedProductsModel{
-  bool get isLoading{
+mixin UtilityModel on ConnectedProductsModel {
+  bool get isLoading {
     return _isLoading;
   }
 }
