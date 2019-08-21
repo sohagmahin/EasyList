@@ -12,25 +12,52 @@ mixin ConnectedProductsModel on Model {
 
   void addProduct(
       String title, String description, String image, double price) {
-    final Map<String, dynamic> productData = {
+      final Map<String, dynamic> productData = {
       'title': title,
       'description': description,
       'image':
           'https://i0.wp.com/www.royalbeans.in/wp-content/uploads/2017/09/Roasted-Almond-Milk-Chocolate-Bar-Royal-Beans-Chocolates.jpg?fit=2223%2C3000&ssl=1',
-      'price': price
+      'price': price,
+      'userEmail': _authenticatedUser.email,
+      'userId': _authenticatedUser.id
     };
-    http.post('https://fllutter-products.firebaseio.com/products.json',
-        body: json.encode(productData));
-
-    final Product newProduct = Product(
-        title: title,
-        description: description,
-        image: image,
-        price: price,
-        userEmail: _authenticatedUser.email,
-        userId: _authenticatedUser.id);
-    _products.add(newProduct);
-    notifyListeners();
+    http
+        .post('https://fllutter-products.firebaseio.com/products.json',
+            body: json.encode(productData))
+        .then((http.Response response) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      print(responseData);
+      final Product newProduct = Product(
+          id: responseData['name'],
+          title: title,
+          description: description,
+          image: image,
+          price: price,
+          userEmail: _authenticatedUser.email,
+          userId: _authenticatedUser.id);
+      //_products.add(newProduct);
+      notifyListeners();
+    });
+  }
+  void fetchProducts(){
+    http.get('https://fllutter-products.firebaseio.com/products.json').then((http.Response response){
+      final List<Product> fetchedproductList=[];
+      Map<String,dynamic> fetchProductList= json.decode(response.body);
+      fetchProductList.forEach((String key,dynamic product){
+        final Product fetchProdcut= Product(
+          title: product['title'],
+          description: product['description'],
+          id: key,
+          image: product['image'],
+          price: product['price'],
+          userEmail: product['userEmail'],
+          userId: product['userId']
+        );
+        fetchedproductList.add(fetchProdcut);
+        _products=fetchedproductList;
+        notifyListeners();
+      });
+    });
   }
 }
 
@@ -62,7 +89,7 @@ mixin ProductsModel on ConnectedProductsModel {
   bool get displayFavoritesOnly {
     return _showFavorites;
   }
-
+  
   void deleteProduct() {
     _products.removeAt(selectedProductIndex);
     notifyListeners();
