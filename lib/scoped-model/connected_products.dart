@@ -1,4 +1,5 @@
 import 'package:scoped_model/scoped_model.dart';
+import 'dart:async';
 import '../models/product.dart';
 import '../models/user.dart';
 
@@ -9,10 +10,13 @@ mixin ConnectedProductsModel on Model {
   List<Product> _products = [];
   User _authenticatedUser;
   int _selProductIndex;
+  bool _isLoading = false;
 
-  void addProduct(
+  Future<Null> addProduct(
       String title, String description, String image, double price) {
-      final Map<String, dynamic> productData = {
+    _isLoading = true;
+    notifyListeners();
+    final Map<String, dynamic> productData = {
       'title': title,
       'description': description,
       'image':
@@ -21,8 +25,7 @@ mixin ConnectedProductsModel on Model {
       'userEmail': _authenticatedUser.email,
       'userId': _authenticatedUser.id
     };
-    http
-        .post('https://fllutter-products.firebaseio.com/products.json',
+    return http.post('https://fllutter-products.firebaseio.com/products.json',
             body: json.encode(productData))
         .then((http.Response response) {
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -35,28 +38,9 @@ mixin ConnectedProductsModel on Model {
           price: price,
           userEmail: _authenticatedUser.email,
           userId: _authenticatedUser.id);
-      //_products.add(newProduct);
+      _products.add(newProduct);
+      _isLoading = false;
       notifyListeners();
-    });
-  }
-  void fetchProducts(){
-    http.get('https://fllutter-products.firebaseio.com/products.json').then((http.Response response){
-      final List<Product> fetchedproductList=[];
-      Map<String,dynamic> fetchProductList= json.decode(response.body);
-      fetchProductList.forEach((String key,dynamic product){
-        final Product fetchProdcut= Product(
-          title: product['title'],
-          description: product['description'],
-          id: key,
-          image: product['image'],
-          price: product['price'],
-          userEmail: product['userEmail'],
-          userId: product['userId']
-        );
-        fetchedproductList.add(fetchProdcut);
-        _products=fetchedproductList;
-        notifyListeners();
-      });
     });
   }
 }
@@ -89,7 +73,7 @@ mixin ProductsModel on ConnectedProductsModel {
   bool get displayFavoritesOnly {
     return _showFavorites;
   }
-  
+
   void deleteProduct() {
     _products.removeAt(selectedProductIndex);
     notifyListeners();
@@ -133,10 +117,47 @@ mixin ProductsModel on ConnectedProductsModel {
     _selProductIndex = index;
     notifyListeners();
   }
+
+  void fetchProducts() {
+    _isLoading = true;
+    notifyListeners();
+    http
+        .get('https://fllutter-products.firebaseio.com/products.json')
+        .then((http.Response response) {
+      
+      final List<Product> fetchedproductList = [];
+      Map<String, dynamic> productListData = json.decode(response.body);
+      if(productListData == null){
+        _isLoading= false;
+        notifyListeners();
+        return ;
+      }
+      productListData.forEach((String key, dynamic product) {
+        final Product fetchProdcut = Product(
+            title: product['title'],
+            description: product['description'],
+            id: key,
+            image: product['image'],
+            price: product['price'],
+            userEmail: product['userEmail'],
+            userId: product['userId']);
+        fetchedproductList.add(fetchProdcut);
+        _products = fetchedproductList;
+        _isLoading = false;
+        notifyListeners();
+      });
+    });
+  }
 }
 
 mixin UserModel on ConnectedProductsModel {
   void login(String email, String password) {
     _authenticatedUser = User('sfdsfsd', email, password);
+  }
+}
+
+mixin UtilityModel on ConnectedProductsModel{
+  bool get isLoading{
+    return _isLoading;
   }
 }

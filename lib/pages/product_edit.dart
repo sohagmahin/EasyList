@@ -65,8 +65,7 @@ class _ProductEditState extends State<ProductEditPage> {
             focusNode: _descriptionFocusNode,
             maxLines: 4,
             decoration: InputDecoration(labelText: 'Product Description'),
-            initialValue:
-                product == null ? '' :product.description,
+            initialValue: product == null ? '' : product.description,
             validator: validatorDescription,
             onSaved: (String value) {
               _formData['description'] = value;
@@ -80,48 +79,53 @@ class _ProductEditState extends State<ProductEditPage> {
             focusNode: _priceFocusNode,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(labelText: 'Product Price'),
-            initialValue:
-                product == null ? '' : product.price.toString(),
+            initialValue: product == null ? '' : product.price.toString(),
             validator: validatorPrice,
             onSaved: (String value) {
               _formData['price'] = double.parse(value);
             }));
   }
 
-  void _submitForm(Function addProduct, Function updateProduct,Function setSelectedProduct,[int selectedProductIndex]) {
+  void _submitForm(
+      Function addProduct, Function updateProduct, Function setSelectedProduct,
+      [int selectedProductIndex]) {
     if (!_formKey.currentState.validate()) {
       return;
     }
     _formKey.currentState.save();
     if (selectedProductIndex == null) {
-      addProduct(
-             _formData['title'],
-             _formData['description'],
-             _formData['image'],
-             _formData['price']
-      );
-             
+      addProduct(_formData['title'], _formData['description'],
+              _formData['image'], _formData['price'])
+          .then((_) {
+        return Navigator.pushReplacementNamed(context, '/products')
+            .then((_) => setSelectedProduct());
+      });
     } else if (selectedProductIndex != null) {
       updateProduct(
-             _formData['title'],
-             _formData['description'],
-             _formData['image'],
-             _formData['price'],
+        _formData['title'],
+        _formData['description'],
+        _formData['image'],
+        _formData['price'],
       );
     }
-    Navigator.pushReplacementNamed(context, '/products').then((_)=>setSelectedProduct());
   }
 
   Widget _buildSubmitButton() {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget child, MainModel model) {
-        return RaisedButton(
-          child: Text(
-            'Save',
-          ),
-          textColor: Colors.white,
-          onPressed: () => _submitForm(model.addProduct, model.updateProduct,model.selectProduct,model.selectedProductIndex),
-        );
+        return model.isLoading
+            ? Center(child: CircularProgressIndicator())
+            : RaisedButton(
+                child: Text(
+                  'Save',
+                ),
+                textColor: Colors.white,
+                onPressed: () => _submitForm(
+                    model.addProduct,
+                    model.updateProduct,
+                    model.selectProduct,
+                    model.selectedProductIndex),
+              );
       },
     );
   }
@@ -156,7 +160,8 @@ class _ProductEditState extends State<ProductEditPage> {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget child, MainModel model) {
-        final Widget pageContent = _buildPageContent(context,model.selectedProduct);
+        final Widget pageContent =
+            _buildPageContent(context, model.selectedProduct);
         return model.selectedProductIndex == null
             ? pageContent
             : Scaffold(
