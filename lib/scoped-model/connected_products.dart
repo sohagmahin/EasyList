@@ -148,10 +148,10 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
   }
 
-  void fetchProducts() {
+  Future<Null> fetchProducts() {
     _isLoading = true;
     notifyListeners();
-    http
+    return http
         .get('https://fllutter-products.firebaseio.com/products.json')
         .then((http.Response response) {
       final List<Product> fetchedproductList = [];
