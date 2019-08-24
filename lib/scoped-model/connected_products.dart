@@ -76,8 +76,18 @@ mixin ProductsModel on ConnectedProductsModel {
   }
 
   void deleteProduct() {
+    _isLoading = true;
+    final deletedProduct = selectedProduct.id;
     _products.removeAt(selectedProductIndex);
+    _selProductIndex = null;
     notifyListeners();
+    http
+        .delete(
+            'https://fllutter-products.firebaseio.com/products/${deletedProduct}.json')
+        .then((http.Response response) {
+      _isLoading = false;
+      notifyListeners();
+    });
   }
 
   Future<Null> updateProduct(
@@ -93,7 +103,7 @@ mixin ProductsModel on ConnectedProductsModel {
       'userEmail': _authenticatedUser.email,
       'userId': _authenticatedUser.password
     };
-   return http
+    return http
         .put(
             'https://fllutter-products.firebaseio.com/products/${selectedProduct.id}.json',
             body: json.encode(product))
