@@ -30,31 +30,31 @@ class ProductCard extends StatelessWidget {
   }
 
   Widget _buildActionBar(BuildContext context) {
-    return ButtonBar(
-      alignment: MainAxisAlignment.center,
-      children: <Widget>[
-        IconButton(
-            icon: Icon(Icons.info),
-            color: Theme.of(context).accentColor,
-            onPressed: () => Navigator.pushNamed<bool>(
-                  //For generate a product we pass some info. of our product.
-                  context, '/product/' + productIndex.toString(),
-                )),
-        ScopedModelDescendant<MainModel>(
-          builder: (BuildContext context, Widget child, MainModel model) {
-            return IconButton(
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
+        return ButtonBar(
+          alignment: MainAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+                icon: Icon(Icons.info),
+                color: Theme.of(context).accentColor,
+                onPressed: () => Navigator.pushNamed<bool>(
+                      //For generating string then we pass some info of our product.
+                      context, '/product/' +model.allproducts[productIndex].id,
+                    )),
+            IconButton(
               icon: Icon(model.allproducts[productIndex].isFavorite
                   ? Icons.favorite
                   : Icons.favorite_border),
               color: Colors.red,
               onPressed: () {
-                model.selectProduct(productIndex);
+                model.selectProduct(model.allproducts[productIndex].id);
                 model.toggleProductFavoriteStatus();
               },
-            );
-          },
-        )
-      ],
+            )
+          ],
+        );
+      },
     );
   }
 

@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import '../widgets/ui_elements/title_Default.dart';
-import 'package:scoped_model/scoped_model.dart';
-import '../scoped-model/main.dart';
 import '../models/product.dart';
 
 //single product page
 class ProductPages extends StatelessWidget {
-  final int productIndex;
-  ProductPages(this.productIndex);
+  final Product product;
+  ProductPages(this.product);
 
-  _buildAddressPiceRow(BuildContext context,double priceTag) {
+  _buildAddressPiceRow(BuildContext context, double priceTag) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -42,36 +40,36 @@ class ProductPages extends StatelessWidget {
         Navigator.pop(context, false);
         return Future.value(false);
       },
-      child: ScopedModelDescendant<MainModel>(
-        builder: (BuildContext context, Widget child, MainModel model) {
-          final Product product= model.allproducts[productIndex];
-          return Scaffold(
-            appBar: new AppBar(
-              title: Text(product.title),
-            ),
-            body: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                //mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Image.network(product.image),
-                  Container(
-                    padding: EdgeInsets.all(10.0),
-                    child: TitleDefault(product.title),
-                  ),
-                  _buildAddressPiceRow(context,product.price),
-                  Container(
-                    padding: EdgeInsets.all(10.0),
-                    child: Text(
-                      product.description,
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-                ],
+      child: Scaffold(
+        appBar: new AppBar(
+          title: Text(product.title),
+        ),
+        body: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            //mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              FadeInImage(
+                image: NetworkImage(product.image),
+                height: 300,
+                fit: BoxFit.cover,
+                placeholder: AssetImage('assets/food.jpg'),
               ),
-            ),
-          );
-        },
+              Container(
+                padding: EdgeInsets.all(10.0),
+                child: TitleDefault(product.title),
+              ),
+              _buildAddressPiceRow(context, product.price),
+              Container(
+                padding: EdgeInsets.all(10.0),
+                child: Text(
+                  product.description,
+                  textAlign: TextAlign.center,
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

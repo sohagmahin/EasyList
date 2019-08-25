@@ -9,7 +9,7 @@ import 'dart:convert';
 mixin ConnectedProductsModel on Model {
   List<Product> _products = [];
   User _authenticatedUser;
-  int _selProductIndex;
+  String _selProductId;
   bool _isLoading = false;
 
   Future<Null> addProduct(
@@ -60,34 +60,27 @@ mixin ProductsModel on ConnectedProductsModel {
     return List.from(_products);
   }
 
-  int get selectedProductIndex {
-    return _selProductIndex;
+  String get selectedProductId {
+    return _selProductId;
   }
 
   Product get selectedProduct {
-    if (selectedProductIndex == null) {
+    if (selectedProductId == null) {
       return null;
     }
-    return _products[selectedProductIndex];
+    return _products.firstWhere((Product product) {
+      return product.id == _selProductId;
+    });
+  }
+
+  int get selectedProductIndex {
+    return _products.indexWhere((Product product) {
+      return product.id == _selProductId;
+    });
   }
 
   bool get displayFavoritesOnly {
     return _showFavorites;
-  }
-
-  void deleteProduct() {
-    _isLoading = true;
-    final deletedProduct = selectedProduct.id;
-    _products.removeAt(selectedProductIndex);
-    _selProductIndex = null;
-    notifyListeners();
-    http
-        .delete(
-            'https://fllutter-products.firebaseio.com/products/${deletedProduct}.json')
-        .then((http.Response response) {
-      _isLoading = false;
-      notifyListeners();
-    });
   }
 
   Future<Null> updateProduct(
@@ -122,10 +115,26 @@ mixin ProductsModel on ConnectedProductsModel {
     });
   }
 
+  void deleteProduct() {
+    _isLoading = true;
+    final deletedProduct = selectedProduct.id;
+    _products.removeAt(selectedProductIndex);
+    _selProductId = null;
+    notifyListeners();
+    http
+        .delete(
+            'https://fllutter-products.firebaseio.com/products/${deletedProduct}.json')
+        .then((http.Response response) {
+      _isLoading = false;
+      notifyListeners();
+    });
+  }
+
   void toggleProductFavoriteStatus() {
     final bool isCurrentlyFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentlyFavorite;
     final Product updatedProduct = Product(
+        id: selectedProduct.id,
         title: selectedProduct.title,
         price: selectedProduct.price,
         description: selectedProduct.description,
@@ -135,7 +144,7 @@ mixin ProductsModel on ConnectedProductsModel {
         isFavorite: newFavoriteStatus);
     _products[selectedProductIndex] = updatedProduct;
     notifyListeners();
-    _selProductIndex = null;
+    _selProductId = null;
   }
 
   void toggleDisplayMode() {
@@ -143,8 +152,8 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
   }
 
-  void selectProduct(int index) {
-    _selProductIndex = index;
+  void selectProduct(String productId) {
+    _selProductId = productId;
     notifyListeners();
   }
 

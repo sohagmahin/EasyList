@@ -3,6 +3,7 @@ import './pages/productAdmin.dart';
 import './pages/products.dart';
 import './pages/product.dart';
 import './pages/auth.dart';
+import './models/product.dart';
 import 'package:scoped_model/scoped_model.dart';
 import './scoped-model/main.dart';
 
@@ -45,10 +46,13 @@ class _MyAppState extends State<MyApp> {
             return null;
           }
           if (pathElement[1] == 'product') {
-            final int index = int.parse(pathElement[2]);
+            final String productId = pathElement[2];
+            final Product product = model.allproducts.firstWhere((Product product){
+              return product.id == productId;
+            });
             return MaterialPageRoute<bool>(
               builder: (BuildContext context) =>
-                  ProductPages(index),
+                  ProductPages(product),
             );
           }
           return null;
