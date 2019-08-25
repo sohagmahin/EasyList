@@ -183,6 +183,7 @@ mixin ProductsModel on ConnectedProductsModel {
         _products = fetchedproductList;
         _isLoading = false;
         notifyListeners();
+        _selProductId=null;
       });
     });
   }
