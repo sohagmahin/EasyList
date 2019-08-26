@@ -26,11 +26,12 @@ mixin ConnectedProductsModel on Model {
       'userId': _authenticatedUser.id
     };
     return http
-        .post('https://fllutter-products.firebaseio.com/products',
+        .post('https://fllutter-products.firebaseio.com/products.json',
             body: json.encode(productData))
         .then((http.Response response) {
       if (response.statusCode != 200 && response.statusCode != 201) {
         _isLoading = false;
+        notifyListeners();
         return false;
       }
 
