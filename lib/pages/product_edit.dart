@@ -96,9 +96,26 @@ class _ProductEditState extends State<ProductEditPage> {
     if (selectedProductIndex == -1) {
       addProduct(_formData['title'], _formData['description'],
               _formData['image'], _formData['price'])
-          .then((_) {
-        return Navigator.pushReplacementNamed(context, '/products')
-            .then((_) => setSelectedProduct());
+          .then((bool success) {
+        if (success) {
+          return Navigator.pushReplacementNamed(context, '/products')
+              .then((_) => setSelectedProduct());
+        } else {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Something went wrong'),
+                  content: Text('Pleace try again!'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Okay'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
+                );
+              });
+        }
       });
     } else if (selectedProductIndex != null) {
       updateProduct(

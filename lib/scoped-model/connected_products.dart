@@ -12,7 +12,7 @@ mixin ConnectedProductsModel on Model {
   String _selProductId;
   bool _isLoading = false;
 
-  Future<Null> addProduct(
+  Future<bool> addProduct(
       String title, String description, String image, double price) {
     _isLoading = true;
     notifyListeners();
@@ -26,9 +26,14 @@ mixin ConnectedProductsModel on Model {
       'userId': _authenticatedUser.id
     };
     return http
-        .post('https://fllutter-products.firebaseio.com/products.json',
+        .post('https://fllutter-products.firebaseio.com/products',
             body: json.encode(productData))
         .then((http.Response response) {
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        _isLoading = false;
+        return false;
+      }
+
       final Map<String, dynamic> responseData = json.decode(response.body);
       print(responseData);
       final Product newProduct = Product(
@@ -42,6 +47,7 @@ mixin ConnectedProductsModel on Model {
       _products.add(newProduct);
       _isLoading = false;
       notifyListeners();
+      return true;
     });
   }
 }
@@ -183,7 +189,7 @@ mixin ProductsModel on ConnectedProductsModel {
         _products = fetchedproductList;
         _isLoading = false;
         notifyListeners();
-        _selProductId=null;
+        _selProductId = null;
       });
     });
   }
