@@ -13,7 +13,7 @@ mixin ConnectedProductsModel on Model {
   bool _isLoading = false;
 
   Future<bool> addProduct(
-      String title, String description, String image, double price) {
+      String title, String description, String image, double price) async {
     _isLoading = true;
     notifyListeners();
     final Map<String, dynamic> productData = {
@@ -25,16 +25,16 @@ mixin ConnectedProductsModel on Model {
       'userEmail': _authenticatedUser.email,
       'userId': _authenticatedUser.id
     };
-    return http
-        .post('https://fllutter-products.firebaseio.com/products.json',
-            body: json.encode(productData))
-        .then((http.Response response) {
+    try {
+      final http.Response response = await http.post(
+          'https://fllutter-products.firebaseio.com/products.json',
+          body: json.encode(productData));
+
       if (response.statusCode != 200 && response.statusCode != 201) {
         _isLoading = false;
         notifyListeners();
         return false;
       }
-
       final Map<String, dynamic> responseData = json.decode(response.body);
       print(responseData);
       final Product newProduct = Product(
@@ -49,11 +49,11 @@ mixin ConnectedProductsModel on Model {
       _isLoading = false;
       notifyListeners();
       return true;
-    }).catchError((error){
-      _isLoading =false;
+    } catch (error) {
+      _isLoading = false;
       notifyListeners();
       return false;
-    });
+    }
   }
 }
 
@@ -124,7 +124,7 @@ mixin ProductsModel on ConnectedProductsModel {
       _products[selectedProductIndex] = updatedProduct;
       notifyListeners();
       return true;
-    }).catchError((error){
+    }).catchError((error) {
       _isLoading = false;
       notifyListeners();
       return false;
@@ -144,7 +144,7 @@ mixin ProductsModel on ConnectedProductsModel {
       _isLoading = false;
       notifyListeners();
       return true;
-    }).catchError((error){
+    }).catchError((error) {
       _isLoading = false;
       notifyListeners();
       return false;
@@ -206,7 +206,7 @@ mixin ProductsModel on ConnectedProductsModel {
         notifyListeners();
         _selProductId = null;
       });
-    }).catchError((error){
+    }).catchError((error) {
       _isLoading = false;
       notifyListeners();
       return;
