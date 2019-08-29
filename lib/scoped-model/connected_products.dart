@@ -16,6 +16,7 @@ mixin ConnectedProductsModel on Model {
 mixin ProductsModel on ConnectedProductsModel {
   bool _showFavorites = false;
 
+ 
   List<Product> get allproducts {
     return List.from(_products);
   }
@@ -173,7 +174,7 @@ mixin ProductsModel on ConnectedProductsModel {
 
   void selectProduct(String productId) {
     _selProductId = productId;
-    notifyListeners();
+    //notifyListeners();
   }
 
   Future<Null> fetchProducts() {
@@ -221,5 +222,9 @@ mixin UserModel on ConnectedProductsModel {
 mixin UtilityModel on ConnectedProductsModel {
   bool get isLoading {
     return _isLoading;
+  }
+   void setLoading (bool loadingStatus){
+     _isLoading= loadingStatus;
+     notifyListeners();
   }
 }

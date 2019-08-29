@@ -99,7 +99,7 @@ class _ProductEditState extends State<ProductEditPage> {
           .then((bool success) {
         if (success) {
           return Navigator.pushReplacementNamed(context, '/products')
-              .then((_) => setSelectedProduct());
+              .then((_) => setSelectedProduct(null));
         } else {
           showDialog(
               context: context,
@@ -116,6 +116,7 @@ class _ProductEditState extends State<ProductEditPage> {
                 );
               });
         }
+        return true;
       });
     } else if (selectedProductIndex != null) {
       updateProduct(
@@ -125,7 +126,7 @@ class _ProductEditState extends State<ProductEditPage> {
         _formData['price'],
       ).then((_) {
         return Navigator.pushReplacementNamed(context, '/products')
-            .then((_) => setSelectedProduct());
+            .then((_) => setSelectedProduct(null));
       });
     }
   }
@@ -156,24 +157,27 @@ class _ProductEditState extends State<ProductEditPage> {
     final double targetPadding = deviceWidth - targetWidth;
 
     return GestureDetector(
-        onTap: () {
-          //For disable keyboard.
-          FocusScope.of(context).requestFocus(FocusNode());
-        },
+      onTap: () {
+        //For disable keyboard.
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
         child: Container(
-            margin: EdgeInsets.all(10.0),
-            child: Form(
-                key: _formKey,
-                child: ListView(
-                  padding: EdgeInsets.symmetric(horizontal: targetPadding / 2),
-                  children: <Widget>[
-                    _buildTitleTextField(product),
-                    _buildDescriptionTextField(product),
-                    _buildPriceTextField(product),
-                    SizedBox(height: 10.0),
-                    _buildSubmitButton(),
-                  ],
-                ))));
+          margin: EdgeInsets.all(10.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: EdgeInsets.symmetric(horizontal: targetPadding / 2),
+              children: <Widget>[
+                _buildTitleTextField(product),
+                _buildDescriptionTextField(product),
+                _buildPriceTextField(product),
+                SizedBox(height: 10.0),
+                _buildSubmitButton(),
+              ],
+            ),
+          ),
+        ),
+    );
   }
 
   @override
@@ -185,10 +189,10 @@ class _ProductEditState extends State<ProductEditPage> {
         return model.selectedProductIndex == -1
             ? pageContent
             : Scaffold(
-                appBar: AppBar(
-                  title: Text('Edit Product'),
-                ),
-                body: pageContent,
+                  appBar: AppBar(
+                    title: Text('Edit Product'),
+                  ),
+                  body: pageContent,
               );
       },
     );

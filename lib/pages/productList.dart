@@ -10,14 +10,15 @@ class ProductListPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-   
+
     return _ProductListPageState();
   }
 }
 class _ProductListPageState extends State<ProductListPage>{
   @override
   initState(){
-    widget.model.fetchProducts();
+    //When we use this method .Then we face error is 'No material widget found'.
+   // widget.model.fetchProducts();
     super.initState();
   }
 
@@ -27,11 +28,17 @@ class _ProductListPageState extends State<ProductListPage>{
           icon: Icon(Icons.edit),
           onPressed: () {
             model.selectProduct(model.allproducts[index].id);
+            print(model.isLoading);
+            ///because when we tab create product then our loading spiner automatically set true. so this code we can fixed.
+            if(model.isLoading){
+              model.setLoading(false);
+            }
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (BuildContext context) => ProductEditPage(),
               ),
-            ).then((_){
+            )
+            .then((_){
               model.selectProduct(null);
             });
           },
