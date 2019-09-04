@@ -16,7 +16,6 @@ mixin ConnectedProductsModel on Model {
 mixin ProductsModel on ConnectedProductsModel {
   bool _showFavorites = false;
 
- 
   List<Product> get allproducts {
     return List.from(_products);
   }
@@ -50,7 +49,8 @@ mixin ProductsModel on ConnectedProductsModel {
   bool get displayFavoritesOnly {
     return _showFavorites;
   }
- Future<bool> addProduct(
+
+  Future<bool> addProduct(
       String title, String description, String image, double price) async {
     _isLoading = true;
     notifyListeners();
@@ -93,6 +93,7 @@ mixin ProductsModel on ConnectedProductsModel {
       return false;
     }
   }
+
   Future<bool> updateProduct(
       String title, String description, String image, double price) {
     _isLoading = true;
@@ -218,17 +219,30 @@ mixin UserModel on ConnectedProductsModel {
     _authenticatedUser = User('sfdsfsd', email, password);
   }
 
-  Future <Map<String,dynamic>> signup (String email,String password) async {
-
-   final Map<String,dynamic>_authData={
+  Future<Map<String, dynamic>> signup(String email, String password) async {
+    final Map<String, dynamic> _authData = {
       'email': email,
-      'password':password
+      'password': password
     };
 
-    String url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDuN170JOVPweQylyt4oY770upWIUMd9ls';
-    http.Response response = await http.post(url,body: json.encode(_authData));
+    String url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDuN170JOVPweQylyt4oY770upWIUMd9ls';
+    http.Response response = await http.post(url,
+        body: json.encode(_authData),
+        headers: {'Content-Type': 'application/json'});
     print(json.decode(response.body));
-    return {'success': true,'message': 'Authnication successed!'};
+
+    bool hasError = true;
+    String message = "Something went wrong!";
+    Map<String,dynamic> responseData = json.decode(response.body);
+    if(responseData.containsKey('idToken')){
+      hasError=false;
+      message = 'Authentication succeeded';
+    }else if(responseData['error']['message']=='EMAIL_EXISTS'){
+      hasError = true;
+      message='Email has already exists!';
+    }
+    return {'success': !hasError, 'message': message};
   }
 }
 
@@ -236,8 +250,9 @@ mixin UtilityModel on ConnectedProductsModel {
   bool get isLoading {
     return _isLoading;
   }
-   void setLoading (bool loadingStatus){
-     _isLoading= loadingStatus;
-     notifyListeners();
+
+  void setLoading(bool loadingStatus) {
+    _isLoading = loadingStatus;
+    notifyListeners();
   }
 }
