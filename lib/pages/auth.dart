@@ -182,8 +182,10 @@ class _Auth extends State<Auth> {
                           ScopedModelDescendant<MainModel>(
                             builder: (BuildContext context, Widget child,
                                 MainModel model) {
-                              return RaisedButton(
-                                child: Text('Login'),
+                              return model.isLoading? CircularProgressIndicator(): RaisedButton(
+                                child: Text(AuthMode.Login == _authMode
+                                    ? 'LOGIN'
+                                    : 'SIGNUP'),
                                 color: Theme.of(context).primaryColor,
                                 textColor: Colors.white,
                                 onPressed: () =>
