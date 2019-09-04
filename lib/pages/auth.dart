@@ -42,11 +42,13 @@ class _Auth extends State<Auth> {
   }
 
   String validatorPassword(String value) {
-    return value.isEmpty || value.length<5 ? 'Password should not be empty & required more than 5!' : null;
+    return value.isEmpty || value.length < 5
+        ? 'Password should not be empty & required more than 5!'
+        : null;
   }
 
   String validatorConfirmPassword(String value) {
-    return _passwordEditingController.text!= value ? 'Do not match!' : null;
+    return _passwordEditingController.text != value ? 'Do not match!' : null;
   }
 
   Widget _buildEmailTextField() {
@@ -80,9 +82,6 @@ class _Auth extends State<Auth> {
           labelText: 'Confirm Password', filled: true, fillColor: Colors.white),
       obscureText: true,
       validator: validatorConfirmPassword,
-      onSaved: (String value) {
-        _formData['password'] = value;
-      },
     );
   }
 
@@ -98,13 +97,21 @@ class _Auth extends State<Auth> {
     );
   }
 
-  void _submitForm(Function login) {
+  void _submitForm(Function login, Function signup) async {
     if (!_formKey.currentState.validate() || !_formData['acceptSwitch']) {
       return;
     }
     _formKey.currentState.save();
-    login(_formData['email'], _formData['password']);
-    Navigator.pushReplacementNamed(context, '/products');
+    if (_authMode == AuthMode.Login) {
+      login(_formData['email'], _formData['password']);
+      Navigator.pushReplacementNamed(context, '/products');
+    } else {
+      Map<String, dynamic> successInformation =
+          await signup(_formData['email'], _formData['password']);
+      if (successInformation['success']) {
+        Navigator.pushReplacementNamed(context, '/products');
+      }
+    }
   }
 
   @override
@@ -162,7 +169,8 @@ class _Auth extends State<Auth> {
                                 child: Text('Login'),
                                 color: Theme.of(context).primaryColor,
                                 textColor: Colors.white,
-                                onPressed: () => _submitForm(model.login),
+                                onPressed: () =>
+                                    _submitForm(model.login, model.signup),
                               );
                             },
                           ),

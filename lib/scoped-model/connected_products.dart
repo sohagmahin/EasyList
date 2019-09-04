@@ -217,6 +217,19 @@ mixin UserModel on ConnectedProductsModel {
   void login(String email, String password) {
     _authenticatedUser = User('sfdsfsd', email, password);
   }
+
+  Future <Map<String,dynamic>> signup (String email,String password) async {
+
+   final Map<String,dynamic>_authData={
+      'email': email,
+      'password':password
+    };
+
+    String url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDuN170JOVPweQylyt4oY770upWIUMd9ls';
+    http.Response response = await http.post(url,body: json.encode(_authData));
+    print(json.decode(response.body));
+    return {'success': true,'message': 'Authnication successed!'};
+  }
 }
 
 mixin UtilityModel on ConnectedProductsModel {
