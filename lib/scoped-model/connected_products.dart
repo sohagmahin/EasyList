@@ -215,8 +215,36 @@ mixin ProductsModel on ConnectedProductsModel {
 }
 
 mixin UserModel on ConnectedProductsModel {
-  void login(String email, String password) {
-    _authenticatedUser = User('sfdsfsd', email, password);
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    _isLoading = true;
+    notifyListeners();
+    final Map<String, dynamic> _authData = {
+      'email': email,
+      'password': password
+    };
+    String url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDuN170JOVPweQylyt4oY770upWIUMd9ls';
+    http.Response response = await http.post(url,
+        body: json.encode(_authData),
+        headers: {'Content-Type': 'application/json'});
+    print(response.body);
+    bool hasError = true;
+
+    String message = "Something went wrong!";
+    Map<String, dynamic> responseData = json.decode(response.body);
+    if (responseData.containsKey('idToken')) {
+      hasError = false;
+      message = 'Authentication succeeded';
+    } else if (responseData['error']['message'] == 'EMAIL_NOT_FOUND') {
+      hasError = true;
+      message = 'Email not found!';
+    } else if (responseData['error']['message'] == 'INVALID_PASSWORD') {
+      hasError = true;
+      message = 'The password is invalid!';
+    }
+    _isLoading = false;
+    notifyListeners();
+    return {'success': !hasError, 'message': message};
   }
 
   Future<Map<String, dynamic>> signup(String email, String password) async {
@@ -236,15 +264,15 @@ mixin UserModel on ConnectedProductsModel {
 
     bool hasError = true;
     String message = "Something went wrong!";
-    Map<String,dynamic> responseData = json.decode(response.body);
-    if(responseData.containsKey('idToken')){
-      hasError=false;
+    Map<String, dynamic> responseData = json.decode(response.body);
+    if (responseData.containsKey('idToken')) {
+      hasError = false;
       message = 'Authentication succeeded';
-    }else if(responseData['error']['message']=='EMAIL_EXISTS'){
+    } else if (responseData['error']['message'] == 'EMAIL_EXISTS') {
       hasError = true;
-      message='Email has already exists!';
+      message = 'Email has already exists!';
     }
-    _isLoading =false;
+    _isLoading = false;
     notifyListeners();
     return {'success': !hasError, 'message': message};
   }

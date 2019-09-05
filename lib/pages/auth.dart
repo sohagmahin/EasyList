@@ -102,32 +102,33 @@ class _Auth extends State<Auth> {
       return;
     }
     _formKey.currentState.save();
+    Map<String, dynamic> successInformation;
     if (_authMode == AuthMode.Login) {
-      login(_formData['email'], _formData['password']);
+      successInformation =
+          await login(_formData['email'], _formData['password']);
+    } else {
+      successInformation =
+          await signup(_formData['email'], _formData['password']);
+    }
+    if (successInformation['success']) {
       Navigator.pushReplacementNamed(context, '/products');
     } else {
-      Map<String, dynamic> successInformation =
-          await signup(_formData['email'], _formData['password']);
-      if (successInformation['success']) {
-        Navigator.pushReplacementNamed(context, '/products');
-      } else {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('An Error occurred'),
-                content: Text('Email has already exists!'),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('Okay'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  )
-                ],
-              );
-            });
-      }
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('An Error occurred'),
+              content: Text(successInformation['message']),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Okay'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
     }
   }
 
@@ -182,15 +183,17 @@ class _Auth extends State<Auth> {
                           ScopedModelDescendant<MainModel>(
                             builder: (BuildContext context, Widget child,
                                 MainModel model) {
-                              return model.isLoading? CircularProgressIndicator(): RaisedButton(
-                                child: Text(AuthMode.Login == _authMode
-                                    ? 'LOGIN'
-                                    : 'SIGNUP'),
-                                color: Theme.of(context).primaryColor,
-                                textColor: Colors.white,
-                                onPressed: () =>
-                                    _submitForm(model.login, model.signup),
-                              );
+                              return model.isLoading
+                                  ? CircularProgressIndicator()
+                                  : RaisedButton(
+                                      child: Text(AuthMode.Login == _authMode
+                                          ? 'LOGIN'
+                                          : 'SIGNUP'),
+                                      color: Theme.of(context).primaryColor,
+                                      textColor: Colors.white,
+                                      onPressed: () => _submitForm(
+                                          model.login, model.signup),
+                                    );
                             },
                           ),
                         ],
