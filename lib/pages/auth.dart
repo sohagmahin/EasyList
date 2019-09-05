@@ -102,7 +102,7 @@ class _Auth extends State<Auth> {
     }
     _formKey.currentState.save();
 
-    Map<String, dynamic> successInformation = await authenticate(
+     Map<String, dynamic> successInformation = await authenticate(
         _formData['email'], _formData['password'], _authMode);
 
     if (successInformation['success']) {
@@ -135,66 +135,70 @@ class _Auth extends State<Auth> {
     because 768 is break point of mobile screen. In range of high mainly use for table device*/
     final double targetWidth = deviceWidth > 768.0 ? 500 : deviceWidth * 0.95;
     return Scaffold(
-        appBar: AppBar(title: Text('LOGIN PANNEL')),
-        body: GestureDetector(
-            onTap: () {
-              //for disable keybord
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-            child: Container(
-                decoration: BoxDecoration(image: _buildBackgroundImage()),
-                padding: EdgeInsets.all(10.0),
-                child: Center(
-                    child: SingleChildScrollView(
-                  child: Container(
-                    width: targetWidth,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          _buildEmailTextField(),
-                          SizedBox(height: 10.0),
-                          _buildPasswordTextField(),
-                          SizedBox(height: 10.0),
-                          _authMode == AuthMode.SignUp
-                              ? _buildConfirmPasswordTextField()
-                              : Container(),
-                          _buildAcceptSwitch(),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          FlatButton(
-                            child: Text(
-                                "Switch to ${AuthMode.Login == _authMode ? 'SignUp' : 'Login'}"),
-                            onPressed: () {
-                              setState(() {
-                                _authMode = _authMode == AuthMode.SignUp
-                                    ? AuthMode.Login
-                                    : AuthMode.SignUp;
-                              });
-                            },
-                          ),
-                          SizedBox(height: 10),
-                          ScopedModelDescendant<MainModel>(
-                            builder: (BuildContext context, Widget child,
-                                MainModel model) {
-                              return model.isLoading
-                                  ? CircularProgressIndicator()
-                                  : RaisedButton(
-                                      child: Text(AuthMode.Login == _authMode
-                                          ? 'LOGIN'
-                                          : 'SIGNUP'),
-                                      color: Theme.of(context).primaryColor,
-                                      textColor: Colors.white,
-                                      onPressed: () =>
-                                          _submitForm(model.authenticate),
-                                    );
-                            },
-                          ),
-                        ],
+      appBar: AppBar(title: Text('LOGIN PANNEL')),
+      body: GestureDetector(
+        onTap: () {
+          //for disable keybord
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Container(
+          decoration: BoxDecoration(image: _buildBackgroundImage()),
+          padding: EdgeInsets.all(10.0),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Container(
+                width: targetWidth,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      _buildEmailTextField(),
+                      SizedBox(height: 10.0),
+                      _buildPasswordTextField(),
+                      SizedBox(height: 10.0),
+                      _authMode == AuthMode.SignUp
+                          ? _buildConfirmPasswordTextField()
+                          : Container(),
+                      _buildAcceptSwitch(),
+                      SizedBox(
+                        height: 10,
                       ),
-                    ),
+                      FlatButton(
+                        child: Text(
+                            "Switch to ${AuthMode.Login == _authMode ? 'SignUp' : 'Login'}"),
+                        onPressed: () {
+                          setState(() {
+                            _authMode = _authMode == AuthMode.SignUp
+                                ? AuthMode.Login
+                                : AuthMode.SignUp;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      ScopedModelDescendant<MainModel>(
+                        builder: (BuildContext context, Widget child,
+                            MainModel model) {
+                          return model.isLoading
+                              ? CircularProgressIndicator()
+                              : RaisedButton(
+                                  child: Text(AuthMode.Login == _authMode
+                                      ? 'LOGIN'
+                                      : 'SIGNUP'),
+                                  color: Theme.of(context).primaryColor,
+                                  textColor: Colors.white,
+                                  onPressed: () =>
+                                      _submitForm(model.authenticate),
+                                );
+                        },
+                      ),
+                    ],
                   ),
-                )))));
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
