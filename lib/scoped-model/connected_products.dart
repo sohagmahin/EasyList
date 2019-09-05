@@ -2,6 +2,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'dart:async';
 import '../models/product.dart';
 import '../models/user.dart';
+import '../models/auth.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -215,54 +216,35 @@ mixin ProductsModel on ConnectedProductsModel {
 }
 
 mixin UserModel on ConnectedProductsModel {
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<Map<String, dynamic>> authenticate(String email, String password,
+      [AuthMode authMode]) async {
     _isLoading = true;
     notifyListeners();
+
+    http.Response response;
+
     final Map<String, dynamic> _authData = {
       'email': email,
       'password': password
     };
-    String url =
-        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDuN170JOVPweQylyt4oY770upWIUMd9ls';
-    http.Response response = await http.post(url,
-        body: json.encode(_authData),
-        headers: {'Content-Type': 'application/json'});
-    print(response.body);
-    bool hasError = true;
-
-    String message = "Something went wrong!";
-    Map<String, dynamic> responseData = json.decode(response.body);
-    if (responseData.containsKey('idToken')) {
-      hasError = false;
-      message = 'Authentication succeeded';
-    } else if (responseData['error']['message'] == 'EMAIL_NOT_FOUND') {
-      hasError = true;
-      message = 'Email not found!';
-    } else if (responseData['error']['message'] == 'INVALID_PASSWORD') {
-      hasError = true;
-      message = 'The password is invalid!';
+    if (authMode == AuthMode.Login) {
+      String url =
+          'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDuN170JOVPweQylyt4oY770upWIUMd9ls';
+      response = await http.post(url,
+          body: json.encode(_authData),
+          headers: {'Content-Type': 'application/json'});
+    } else {
+      String url =
+          'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDuN170JOVPweQylyt4oY770upWIUMd9ls';
+      response = await http.post(url,
+          body: json.encode(_authData),
+          headers: {'Content-Type': 'application/json'});
     }
-    _isLoading = false;
-    notifyListeners();
-    return {'success': !hasError, 'message': message};
-  }
 
-  Future<Map<String, dynamic>> signup(String email, String password) async {
-    _isLoading = true;
-    notifyListeners();
-    final Map<String, dynamic> _authData = {
-      'email': email,
-      'password': password
-    };
-
-    String url =
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDuN170JOVPweQylyt4oY770upWIUMd9ls';
-    http.Response response = await http.post(url,
-        body: json.encode(_authData),
-        headers: {'Content-Type': 'application/json'});
     print(json.decode(response.body));
 
     bool hasError = true;
+
     String message = "Something went wrong!";
     Map<String, dynamic> responseData = json.decode(response.body);
     if (responseData.containsKey('idToken')) {
@@ -271,6 +253,12 @@ mixin UserModel on ConnectedProductsModel {
     } else if (responseData['error']['message'] == 'EMAIL_EXISTS') {
       hasError = true;
       message = 'Email has already exists!';
+    } else if (responseData['error']['message'] == 'EMAIL_NOT_FOUND') {
+      hasError = true;
+      message = 'Email not found!';
+    } else if (responseData['error']['message'] == 'INVALID_PASSWORD') {
+      hasError = true;
+      message = 'The password is invalid!';
     }
     _isLoading = false;
     notifyListeners();
