@@ -20,11 +20,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final MainModel _model = MainModel();
+  @override
+  void initState() {
+    _model.autoAuthenticate();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final MainModel model = MainModel();
     return ScopedModel<MainModel>(
-      model: model,
+      model: _model,
       child: MaterialApp(
         theme: ThemeData(
             brightness: Brightness.light,
@@ -35,9 +41,13 @@ class _MyAppState extends State<MyApp> {
             ),
         //home: auth() ,
         routes: {
-          '/': (BuildContext context) => Auth(),
-          '/products': (BuildContext context) => ProductsPage(model),
-          '/admin': (BuildContext context) => ProductAdminPage(model)
+          '/': (BuildContext context) => ScopedModelDescendant(
+                builder: (BuildContext context, Widget child, MainModel model) {
+                  return model.user == null ? AuthPage() : ProductsPage(_model);
+                },
+              ),
+          '/products': (BuildContext context) => ProductsPage(_model),
+          '/admin': (BuildContext context) => ProductAdminPage(_model)
         },
         onGenerateRoute: (RouteSettings setting) {
           final List<String> pathElement = setting.name.split('/');
@@ -47,19 +57,19 @@ class _MyAppState extends State<MyApp> {
           }
           if (pathElement[1] == 'product') {
             final String productId = pathElement[2];
-            final Product product = model.allproducts.firstWhere((Product product){
+            final Product product =
+                _model.allproducts.firstWhere((Product product) {
               return product.id == productId;
             });
             return MaterialPageRoute<bool>(
-              builder: (BuildContext context) =>
-                  ProductPages(product),
+              builder: (BuildContext context) => ProductPages(product),
             );
           }
           return null;
         },
         onUnknownRoute: (RouteSettings setting) {
           return MaterialPageRoute(
-              builder: (BuildContext context) => ProductsPage(model));
+              builder: (BuildContext context) => ProductsPage(_model));
         },
       ),
     );

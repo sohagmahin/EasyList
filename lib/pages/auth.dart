@@ -3,14 +3,14 @@ import 'package:scoped_model/scoped_model.dart';
 import '../scoped-model/main.dart';
 import '../models/auth.dart';
 
-class Auth extends StatefulWidget {
+class AuthPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _Auth();
+    return _AuthPageState();
   }
 }
 
-class _Auth extends State<Auth> {
+class _AuthPageState extends State<AuthPage> {
   final Map<String, dynamic> _formData = {
     'email': null,
     'password': null,

@@ -1,4 +1,5 @@
 import 'package:scoped_model/scoped_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import '../models/product.dart';
 import '../models/user.dart';
@@ -217,6 +218,11 @@ mixin ProductsModel on ConnectedProductsModel {
 }
 
 mixin UserModel on ConnectedProductsModel {
+
+  User get user{
+    return _authenticatedUser;
+  }
+  
   Future<Map<String, dynamic>> authenticate(String email, String password,
       [AuthMode authMode]) async {
     _isLoading = true;
@@ -258,6 +264,12 @@ mixin UserModel on ConnectedProductsModel {
           email: email,
           token: responseData['idToken']);
 
+          final SharedPreferences pref = await SharedPreferences.getInstance();
+          pref.setString('token', responseData['idToken']);
+          pref.setString('userEmail', email);
+          pref.setString('localId', responseData['localId']);
+
+
     } else if (responseData['error']['message'] == 'EMAIL_EXISTS') {
       hasError = true;
       message = 'Email has already exists!';
@@ -271,6 +283,18 @@ mixin UserModel on ConnectedProductsModel {
     _isLoading = false;
     notifyListeners();
     return {'success': !hasError, 'message': message};
+  }
+
+  void autoAuthenticate () async{
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String token= prefs.getString('token');
+    if(token!= null){
+        String userEmail = prefs.getString('userEmail');
+        String localId= prefs.getString('localId');
+        _authenticatedUser = User(id: localId,email: userEmail,token: token);
+        notifyListeners(); 
+    }
   }
 }
 
