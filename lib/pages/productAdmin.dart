@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../pages/productList.dart';
 import '../pages/product_edit.dart';
 import '../scoped-model/main.dart';
+import '../widgets/ui_elements/logout_listTile.dart';
 
 class ProductAdminPage extends StatelessWidget {
   final MainModel model;
@@ -21,7 +22,9 @@ class ProductAdminPage extends StatelessWidget {
             onTap: () {
               Navigator.pushReplacementNamed(context, '/products');
             },
-          )
+          ),
+          Divider(),
+          LogoutListTile()
         ],
       ),
     );
@@ -49,10 +52,7 @@ class ProductAdminPage extends StatelessWidget {
               ),
             ),
             body: TabBarView(
-              children: <Widget>[
-                ProductEditPage(),
-                ProductListPage(model)
-              ],
+              children: <Widget>[ProductEditPage(), ProductListPage(model)],
             )));
   }
 }

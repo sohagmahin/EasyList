@@ -222,7 +222,7 @@ mixin UserModel on ConnectedProductsModel {
   User get user{
     return _authenticatedUser;
   }
-  
+
   Future<Map<String, dynamic>> authenticate(String email, String password,
       [AuthMode authMode]) async {
     _isLoading = true;
@@ -267,7 +267,7 @@ mixin UserModel on ConnectedProductsModel {
           final SharedPreferences pref = await SharedPreferences.getInstance();
           pref.setString('token', responseData['idToken']);
           pref.setString('userEmail', email);
-          pref.setString('localId', responseData['localId']);
+          pref.setString('userId', responseData['localId']);
 
 
     } else if (responseData['error']['message'] == 'EMAIL_EXISTS') {
@@ -291,10 +291,17 @@ mixin UserModel on ConnectedProductsModel {
     final String token= prefs.getString('token');
     if(token!= null){
         String userEmail = prefs.getString('userEmail');
-        String localId= prefs.getString('localId');
+        String localId= prefs.getString('userId');
         _authenticatedUser = User(id: localId,email: userEmail,token: token);
         notifyListeners(); 
     }
+  }
+  void logout() async {
+    _authenticatedUser = null;
+    final SharedPreferences prefs= await SharedPreferences.getInstance();
+    prefs.remove('token');
+    prefs.remove('userEmail');
+    prefs.remove('userId');
   }
 }
 
