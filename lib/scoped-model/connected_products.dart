@@ -218,7 +218,7 @@ mixin ProductsModel on ConnectedProductsModel {
 }
 
 mixin UserModel on ConnectedProductsModel {
-
+  Timer _authTimer;
   User get user{
     return _authenticatedUser;
   }
@@ -263,11 +263,15 @@ mixin UserModel on ConnectedProductsModel {
           id: responseData['localId'],
           email: email,
           token: responseData['idToken']);
+          setAuthTimeOut(int.parse(responseData['expiresIn']));
+          DateTime now = DateTime.now();
+          DateTime expiryTime = now.add(Duration(seconds: int.parse(responseData['expiresIn'])));
 
           final SharedPreferences pref = await SharedPreferences.getInstance();
           pref.setString('token', responseData['idToken']);
           pref.setString('userEmail', email);
           pref.setString('userId', responseData['localId']);
+          pref.setString('expiryTime', expiryTime.toIso8601String());
 
 
     } else if (responseData['error']['message'] == 'EMAIL_EXISTS') {
@@ -289,19 +293,37 @@ mixin UserModel on ConnectedProductsModel {
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String token= prefs.getString('token');
+    final String expiryTimeString = prefs.getString('expiryTime');
+
     if(token!= null){
+        final DateTime now = DateTime.now();
+        final DateTime parseExpiryTime = DateTime.parse(expiryTimeString);
+
+        if(parseExpiryTime.isBefore(now)){
+          _authenticatedUser =null;
+          notifyListeners(); 
+          return ;
+        }
+
         String userEmail = prefs.getString('userEmail');
         String localId= prefs.getString('userId');
+        int tokenLifeSpan = parseExpiryTime.difference(now).inSeconds;
         _authenticatedUser = User(id: localId,email: userEmail,token: token);
+        setAuthTimeOut(tokenLifeSpan);
         notifyListeners(); 
     }
   }
   void logout() async {
+    print('logout');
     _authenticatedUser = null;
+    _authTimer.cancel();
     final SharedPreferences prefs= await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('userEmail');
     prefs.remove('userId');
+  }
+  void setAuthTimeOut(int time){
+    _authTimer = Timer(Duration(milliseconds: time*5),logout);
   }
 }
 
