@@ -21,9 +21,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final MainModel _model = MainModel();
+  bool _isAuthenticate = false;
   @override
   void initState() {
     _model.autoAuthenticate();
+    _model.userSubject.listen((bool isAuthenticate){
+      setState(() {
+        _isAuthenticate = isAuthenticate;
+      });
+      
+    });
     super.initState();
   }
 
@@ -41,15 +48,15 @@ class _MyAppState extends State<MyApp> {
             ),
         //home: auth() ,
         routes: {
-          '/': (BuildContext context) => ScopedModelDescendant(
-                builder: (BuildContext context, Widget child, MainModel model) {
-                  return model.user == null ? AuthPage() : ProductsPage(model);
-                },
-              ),
-          '/products': (BuildContext context) => ProductsPage(_model),
-          '/admin': (BuildContext context) => ProductAdminPage(_model)
+          '/': (BuildContext context) => !_isAuthenticate ? AuthPage() : ProductsPage(_model),
+          '/admin': (BuildContext context) => !_isAuthenticate ? AuthPage(): ProductAdminPage(_model)
         },
         onGenerateRoute: (RouteSettings setting) {
+          if(!_isAuthenticate){
+            return  MaterialPageRoute<bool>(
+              builder: (BuildContext context) => AuthPage(),
+            );
+          }
           final List<String> pathElement = setting.name.split('/');
           print(pathElement);
           if (pathElement[0] != '') {
@@ -62,14 +69,14 @@ class _MyAppState extends State<MyApp> {
               return product.id == productId;
             });
             return MaterialPageRoute<bool>(
-              builder: (BuildContext context) => ProductPages(product),
+              builder: (BuildContext context) =>!_isAuthenticate ? AuthPage() : ProductPages(product),
             );
           }
           return null;
         },
         onUnknownRoute: (RouteSettings setting) {
           return MaterialPageRoute(
-              builder: (BuildContext context) => ProductsPage(_model));
+              builder: (BuildContext context) => !_isAuthenticate ? AuthPage() : ProductsPage(_model));
         },
       ),
     );
