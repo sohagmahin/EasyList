@@ -154,9 +154,10 @@ mixin ProductsModel on ConnectedProductsModel {
     });
   }
 
-  void toggleProductFavoriteStatus() {
+  void toggleProductFavoriteStatus() async {
     final bool isCurrentlyFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentlyFavorite;
+
     final Product updatedProduct = Product(
         id: selectedProduct.id,
         title: selectedProduct.title,
@@ -269,7 +270,7 @@ mixin UserModel on ConnectedProductsModel {
           id: responseData['localId'],
           email: email,
           token: responseData['idToken']);
-          _userSubject.add(true);
+      _userSubject.add(true);
       setAuthTimeOut(int.parse(responseData['expiresIn']));
       DateTime now = DateTime.now();
       DateTime expiryTime =
@@ -324,6 +325,7 @@ mixin UserModel on ConnectedProductsModel {
     print('logout');
     _authenticatedUser = null;
     _authTimer.cancel();
+    _userSubject.add(false);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('userEmail');
@@ -331,10 +333,7 @@ mixin UserModel on ConnectedProductsModel {
   }
 
   void setAuthTimeOut(int time) {
-    _authTimer = Timer(Duration(seconds: time * 5), () {
-      logout();
-      _userSubject.add(false);
-    });
+    _authTimer = Timer(Duration(seconds: time * 5), logout);
   }
 }
 
