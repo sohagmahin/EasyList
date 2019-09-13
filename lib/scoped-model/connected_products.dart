@@ -192,7 +192,7 @@ mixin ProductsModel on ConnectedProductsModel {
       _products[selectedProductIndex] = updatedProduct;
       notifyListeners();
     }
-    
+
     _selProductId = null;
   }
 
@@ -220,15 +220,20 @@ mixin ProductsModel on ConnectedProductsModel {
         notifyListeners();
         return;
       }
-      productListData.forEach((String key, dynamic product) {
+      productListData.forEach((String key, dynamic productData) {
         final Product fetchProdcut = Product(
-            title: product['title'],
-            description: product['description'],
-            id: key,
-            image: product['image'],
-            price: product['price'],
-            userEmail: product['userEmail'],
-            userId: product['userId']);
+          title: productData['title'],
+          description: productData['description'],
+          id: key,
+          image: productData['image'],
+          price: productData['price'],
+          userEmail: productData['userEmail'],
+          userId: productData['userId'],
+          isFavorite: productData['wishlistUser'] == null
+              ? false
+              : (productData['wishlistUser'] as Map<String, dynamic>)
+                  .containsKey(_authenticatedUser.id),
+        );
         fetchedproductList.add(fetchProdcut);
         _products = fetchedproductList;
         _isLoading = false;
