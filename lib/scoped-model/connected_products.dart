@@ -331,7 +331,7 @@ mixin UserModel on ConnectedProductsModel {
   }
 
   void setAuthTimeOut(int time) {
-    _authTimer = Timer(Duration(milliseconds: time * 5), () {
+    _authTimer = Timer(Duration(seconds: time * 5), () {
       logout();
       _userSubject.add(false);
     });
